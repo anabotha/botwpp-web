@@ -1,0 +1,5 @@
+.node_modules
+openai/
+openai-env/
+.env
+/node_modules

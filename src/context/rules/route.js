@@ -1,0 +1,1 @@
+//reglas, umrales,estados prevois
