@@ -1,6 +1,0 @@
-- [] Definir tipos de las apis de acciones
-- [] ScoreModel tiene que trabajar con listas de acciones. y devolver un listado de acciones con sus respectivos scores
-- [] Camino de exito: main -> bd ->ScoreModel -> decisionEngine -> explain -> wpp
-- [] Armar jobs 
-- [] Almacene las recos en una tabla de resultados
-- [ ] Evalue si fueron frutcitfeos/cuanto se gano , se perdio
