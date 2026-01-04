@@ -54,42 +54,45 @@ export async function scoreMarketSignal(input: {
 
 async function calculateScore({ market, context, systemPrompt, availableMoney }: any) {
   let score = 0;
-
+  console.log(systemPrompt);
+  console.log(availableMoney);
+  console.log(market);
+  console.log(context);
   // BASE SCORE FROM AI
-  try {
-    const openai = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-    });
+  // try {
+  //   const openai = new OpenAI({
+  //     apiKey: process.env.OPENAI_API_KEY,
+  //   });
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
-      messages: [
-        { role: "system", content: systemPrompt },
-        { role: "user", content: JSON.stringify({ market, context, availableMoney }) }
-      ]
-    });
+  //   const response = await openai.chat.completions.create({
+  //     model: "gpt-4-turbo",
+  //     messages: [
+  //       { role: "system", content: systemPrompt },
+  //       { role: "user", content: JSON.stringify({ market, context, availableMoney }) }
+  //     ]
+  //   });
 
-    const aiContent = response.choices[0]?.message?.content;
-    const aiScore = parseFloat(aiContent || "0");
+  //   const aiContent = response.choices[0]?.message?.content;
+  //   const aiScore = parseFloat(aiContent || "0");
 
-    if (!isNaN(aiScore)) {
-      score += aiScore;
-      console.log(`AI Base Score added: ${aiScore}`);
-    }
-  } catch (error) {
-    console.error("Error calculating AI base score:", error);
-  }
+  //   if (!isNaN(aiScore)) {
+  //     score += aiScore;
+  //     console.log(`AI Base Score added: ${aiScore}`);
+  //   }
+  // } catch (error) {
+  //   console.error("Error calculating AI base score:", error);
+  // }
 
-  // Deterministic Rules
-  if (market.priceChange > 2) score += 0.3;
-  if (market.volumeSpike) score += 0.2;
+  // // Deterministic Rules
+  // if (market.priceChange > 2) score += 0.3;
+  // if (market.volumeSpike) score += 0.2;
 
-  const positiveNews = context.filter(
-    (c: any) => c.metadata?.sentiment === "positive"
-  );
+  // const positiveNews = context.filter(
+  //   (c: any) => c.metadata?.sentiment === "positive"
+  // );
 
-  if (positiveNews.length > 0) score += 0.3;
+  // if (positiveNews.length > 0) score += 0.3;
 
-  return Math.min(score, 1);
+  // return Math.min(score, 1);
 }
 
