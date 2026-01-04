@@ -8,7 +8,8 @@
     "node": "^20.19.6",
     "openai": "^6.13.0",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.7",
@@ -18,6 +19,6 @@
   "scripts": {
     "dev": "npm run dev",
     "build": "npm run app.js",
-    "start": "node app.js"
+    "start": "npx tsx app.js"
   }
 }

@@ -1,4 +1,4 @@
-import { evaluarMercado } from "../market/evaluarMercado.js";
+import { evaluarMercado } from "../market/evaluarMercado.ts";
 
 export async function ejecutarEvaluacion(req, res) {
   const auth = req.headers.authorization;
