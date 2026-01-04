@@ -1,5 +1,5 @@
 import { supabase } from "../../supabaseClient";
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server.js";
 
 export async function GET() {
      const { data, error } = await supabase.from("context_embeddings").select("*");
