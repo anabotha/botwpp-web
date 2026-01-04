@@ -18,7 +18,7 @@ app.use(
 );
 
 /* routes */
-import routes from ".\routes\jobs.routes.js";
+import routes from "./src/routes/jobs.routes";
 app.use("/api", routes);
 
 /* listen */
