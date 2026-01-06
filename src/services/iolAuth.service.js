@@ -1,4 +1,4 @@
-import { initialToken, extendSession } from "./api/route.js";
+import { initialToken, extendSession } from "./iolApi.service.js";
 
 let session = {
      accessToken: null,

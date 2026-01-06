@@ -1,5 +1,6 @@
+// src/routes/jobs.routes.js
 import { Router } from "express";
-import { ejecutarEvaluacion } from "../controller/jobs.controller.js";
+import { ejecutarEvaluacion } from "../controllers/jobs.controller.js";
 
 const router = Router();
 
