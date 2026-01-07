@@ -19,6 +19,7 @@
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^5.1.2",
     "nodemon": "^3.1.11",
+    "supabase": "^2.71.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },

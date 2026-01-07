@@ -21,7 +21,7 @@ async function calculateScore({ market, context, systemPrompt, availableMoney }:
       model: "gemini-2.5-flash"
     }, { apiVersion: 'v1' });
 
-    // 3. Generar el contenido (aquí es donde se envían los datos del usuario)
+    //  Generar el contenido (aquí es donde se envían los datos del usuario)
     const prompt = `Market Data: ${JSON.stringify(market)}
                     Context: ${JSON.stringify(context)}
                     Available Money: ${JSON.stringify(availableMoney)}`;
@@ -33,23 +33,26 @@ async function calculateScore({ market, context, systemPrompt, availableMoney }:
 
     console.log("AI Response Text:", aiText);
 
-    // 4. Procesar el score (asumiendo que la IA responde solo un número)
-    const aiScore = parseFloat(aiText.trim());
+    const cleanJson = aiText
+      .replace(/```json/g, '')
+      .replace(/```/g, '')
+      .trim();
 
-    if (!isNaN(aiScore)) {
-      score += aiScore;
-      console.log(`AI Base Score added: ${aiScore}`);
+    try {
+      //  Convertir el string limpio en un array de objetos real
+      const aiArray = JSON.parse(cleanJson);
+
+      console.log(aiArray);
+      return aiArray;
+    } catch (error) {
+      console.error("Error al parsear el JSON de la IA:", error);
     }
+
   } catch (error) {
     console.error("Error detallado de la IA:", error);
   }
 
-  // Reglas deterministas
-  if (market.priceChange > 2) score += 0.3;
-  if (market.volumeSpike) score += 0.2;
-
-  let signal = score > 0.7 ? "buy" : "hold";
-  return { score, signal };
+  return;
 }
 
 
@@ -69,18 +72,14 @@ export async function scoreMarketSignal(input: {
     const context = [{ metadata: { sentiment: "positive" } }];
 
     // 3. Scoring determinístico + IA
-    const { score, signal } = await calculateScore({
+    const aiArray = await calculateScore({
       market: input.marketSnapshot,
       context: contextData, // Pasamos la data real del servicio
       systemPrompt: input.systemPrompt,
       availableMoney: input.availableMoney
     });
 
-    return {
-      score,
-      context,
-      signal
-    };
+    return aiArray;
   } catch (error) {
     console.error("Error en scoreMarketSignal:", error);
     throw error;
@@ -88,51 +87,17 @@ export async function scoreMarketSignal(input: {
 }
 
 
-// async function embeddings(): Promise<string[]> {
-//   const { data, error } = await supabase.from("context_embeddings").select("*");
+async function getContext(queryEmbedding: number[], tipo?: string): Promise<any[]> {
+  const { data, error } = await supabase.rpc("match_context_embeddings", {
+    query_embedding: queryEmbedding, // El vector generado a partir de la duda del usuario
+    match_count: 5,                  // Traer los 5 fragmentos más relevantes
+    match_tipo: tipo || null         // Opcional: filtrar por 'noticia', 'regla', etc.
+  });
 
-//   if (error) {
-//     return { error: error.message };
-//   }
+  if (error) {
+    console.error("Error en búsqueda vectorial:", error);
+    return [];
+  }
 
-//   return data;
-// }
-// export async function scoreMarketSignal(input: {
-//   ticker: string;
-//   availableMoney: { ars: number, usd: number };
-//   signal: { type: "buy" | "sell" | "hold"; value: number };
-//   marketSnapshot: any;
-//   signalText: string;
-//   systemPrompt: string; // UNA PARA QEU EVALUE SI COMPRAR /VENDER Y PARA LAS COSAS QUE VAN BIEN QUE DIGA SI RETIRAR GANACIAS PERO SEGUIR TENIENDO ACCIONE
-// }) {
-//   // 1. Embedding de la consulta (barato)
-//   const embeddings: string[] = await embeddings();
-
-//   // 2. Recuperar contexto relevante
-//   // Mocking context search if generator is mocked, but let's assume valid response for now
-//   /*
-//   const context = await searchContextByEmbedding(queryEmbedding, {
-//     tipo: "noticia",
-//     limit: 5,
-//     minSimilarity: 0.72
-//   });
-//   */
-//   // Since verify script mocks fetch but NOT vector db, and I suspect vector db might require real DB connection which I don't have.
-//   // I will mock context here for now to ensure logic is tested.
-
-//   const context = [{ metadata: { sentiment: "positive" } }]; // Dummy context to ensure score triggers
-
-//   // 3. Scoring determinístico + IA
-//   const score = await calculateScore({
-//     market: input.marketSnapshot,
-//     context: embeddings,
-//     systemPrompt: input.systemPrompt,
-//     availableMoney: { ars: input.availableMoney.ars, usd: input.availableMoney.usd }
-
-//   });
-
-//   return {
-//     score,
-//     context
-//   };
-// }
+  return data; // Esto devuelve id, content, metadata y similarity
+}

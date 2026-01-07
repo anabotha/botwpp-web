@@ -3,6 +3,7 @@ import { getPriceCommonStock, getPriceEtf } from "./marketData.service";
 import { getTotalArs, getTotalUsd } from "./wallet.service";
 import { getCedearsTodos, getLetrasTodas } from "./marketIOL.service";
 import { runDecisionEngine } from "../ia/evaluator/decisionEngine";
+import { listen } from "node:quic";
 
 export const getAccionesIOL = async () => {
      console.log("getAccionesIol")
@@ -47,9 +48,8 @@ export const getAccionesIOL = async () => {
 
 // // Lógica principal de evaluación
 
-export const getAccionesTD = async () => {
+export const getAccionesTD = async (activos: []) => {
      const exchanges = ["NASDAQ", "NYSE"];
-     let activos = await getSimbolosDb() ?? [];
      let acciones: any[] = [];
      const simbolosInteres = await getSimbolosInteresDb();
      // activos = [...activos, ...simbolosInteres]
@@ -176,9 +176,15 @@ export const getAccionesTD = async () => {
 // console.log(`Total de activos cotizados: ${acciones.length}`);
 // return acciones;
 // };
+export function sampleRandom<T>(array: T[], n: number): T[] {
+     return array
+          .sort(() => Math.random() - 0.5)
+          .slice(0, n);
+}
 
 export const ejecutarEvaluacionMercado = async () => {
      console.log("ejectura evaluaciokn mercado");
+     let activos = await getSimbolosDb() ?? [];
 
      const esDiaLaboral = () => {
           const day = new Date().getDay();
@@ -193,13 +199,29 @@ export const ejecutarEvaluacionMercado = async () => {
           usd: getUsd ?? 0
      };
      console.log(totalMoney)
-     const accionesTD = await getAccionesTD();
-     // const accionesIOL = await getAccionesIOL();
-     const accionesIOL: [] = [];
+
+     const simbolosSet = new Set(
+          activos.map(a => String(a.activo ?? a).trim().toUpperCase())
+     );
+
+     const accionesTD = await getAccionesTD(activos);
+     const accionesIOLTodas = await getAccionesIOL();
+
+     const filtrados = accionesIOLTodas.filter(item =>
+          simbolosSet.has(String(item.simbolo).trim().toUpperCase())
+     );
+
+     const candidatasRandom = accionesIOLTodas.filter(item =>
+          !simbolosSet.has(String(item.simbolo).trim().toUpperCase())
+     );
+
+     const randomExtra = sampleRandom(candidatasRandom, 8);
+
+     const accionesIOL = [...filtrados, ...randomExtra];
+     // const accionesIOL: [] = [];
      // const accionesTD: [] = [];
 
      const marketSnapshot = [...accionesTD, ...accionesIOL];
-     console.log("ms", marketSnapshot);
-     console.log("llego a marketservice")
+     console.log("ms", marketSnapshot); console.log("llego a marketservice")
      return await runDecisionEngine(marketSnapshot, totalMoney);
 };
