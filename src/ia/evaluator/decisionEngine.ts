@@ -8,8 +8,10 @@ interface ActiveSignal {
   action: ActionType;
   score: number;
   activo?: string;
+  tipo_activo:string;
   price?: number;
   analisis: string;
+  mercado:string;
 }
 
 interface ExecutionResult {
@@ -38,7 +40,7 @@ Capital Total Disponible para invertir hoy: ${availableMoney}
 
 Perfil de Riesgo: Moderado.
 
-Meta: Ganarle a la inflacion y al procenaje de ganancia de un plazo fijo.
+Meta: 12% de rendimineto semanal ideas. 2% de ganancia por dia minimo.
 
 REGLAS CRÍTICAS:
 
@@ -46,7 +48,8 @@ Tu respuesta debe ser EXCLUSIVAMENTE un array de objetos JSON. No incluyas \`\`\
 
 Si no hay datos suficientes para un activo, omítelo.
 Eres un cron que se ejecuta cada ciertos minutos,no es necesario invertir todo ya.
-
+Se te va a dar contexto historico de ciertos activos ademas de embeddings con informacion historica. 
+Podes recomendar activos que no se encuentren el listado solo si hay una confianza del 90% de que es una buena decision.
 Lógica de monto_sugerido:
 
 Si la acción es BUY: El valor debe ser el monto de capital a asignar (positivo). La suma de todos los "BUY" no debe exceder el capital total disponible.
@@ -57,7 +60,9 @@ Si la acción es HOLD: El valor debe ser 0. Solo pueden ser HOLD los activos que
 
 El score debe reflejar la convicción técnica/fundamental (0.0 a 1.0).
 
-ESTRUCTURA DEL JSON: [ { "activo": "ticker", "tipo_activo": "CEDEAR/STOCK/ETF/LETRA", "action": "BUY/SELL/HOLD", "score": 0.00, "price": 0.00, "monto_sugerido": 0.00, "analisis": "Explicación técnica breve de la decisión" } ]
+Logica mercado:  Si pertenece al mercado argentino o estadounidense. Donde se deberia comprar p.ej : IOL, TD.
+
+ESTRUCTURA DEL JSON: [ { "activo": "ticker", "tipo_activo": "CEDEAR/STOCK/ETF/LETRA", "action": "BUY/SELL/HOLD", "score": 0.00, "price": 0.00, "monto_sugerido": 0.00, "analisis": "Explicación técnica breve de la decisión","mercado":"IOL" } ]
 
 DATOS DE MERCADO PARA ANALIZAR:`
   });
@@ -86,10 +91,12 @@ export async function evaluarActivos(
         console.log("Explanation generated:", current.analisis, "COMPRA");
 
         await enviarAlertaInversion({
-          recomendacion: "OPORTUNIDAD DETECTADA C",
+          recomendacion: "OPORTUNIDAD DETECTADA COMPRA",
           activo: current.activo ?? "?",
+          tipo_activo:current.tipo_activo,
           precio: String(current.price ?? 0),
-          detalle: current.analisis
+          detalle: current.analisis,
+          mercado:current.mercado
         });
       }
 
@@ -97,10 +104,13 @@ export async function evaluarActivos(
         console.log("llega a sell", current);
 
         await enviarAlertaInversion({
-          recomendacion: "OPORTUNIDAD DETECTADA - V",
+          recomendacion: "OPORTUNIDAD DETECTADA - VENTA",
           activo: current.activo ?? "?",
+          tipo_activo:current.tipo_activo,
           precio: String(current.price ?? 0),
-          detalle: current.analisis
+          detalle: current.analisis,
+          mercado:current.mercado
+
         });
       }
     }

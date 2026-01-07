@@ -1,3 +1,6 @@
+import "dotenv/config";
+import { enviarAlertaInversionMail } from "../../services/mail/mail.service.js";
+
 // export async function enviarAlertaInversion({
 //   recomendacion,
 //   activo,
@@ -52,11 +55,24 @@
 export async function enviarAlertaInversion({
   recomendacion,
   activo,
+  tipo_activo,
   precio,
-  detalle
+  detalle,
+  mercado
 }) {
 console.log("llega a  alerta inversion")
 
 console.log("Alerta enviada");
-  console.log(recomendacion,"",activo,precio,detalle);
+  console.log(recomendacion);
+  console.log(activo);
+  console.log(precio);
+  console.log(detalle);
+  console.log(mercado);
+
+ console.log("Enviando alerta inversión:");
+
+  await enviarAlertaInversionMail({recomendacion,activo,tipo_activo,precio,detalle,mercado});
+
+  console.log("Alerta enviada correctamente");
+
 }

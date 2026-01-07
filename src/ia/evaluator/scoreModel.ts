@@ -23,7 +23,7 @@ async function calculateScore({ market, context, systemPrompt, availableMoney }:
 
     //  Generar el contenido (aquí es donde se envían los datos del usuario)
     const prompt = `Market Data: ${JSON.stringify(market)}
-                    Context: ${JSON.stringify(context)}
+                    Context: "Contexto histórico relevante::"${JSON.stringify(context)}
                     Available Money: ${JSON.stringify(availableMoney)}`;
 
     // Se usa generateContent para obtener la respuesta
@@ -66,10 +66,14 @@ export async function scoreMarketSignal(input: {
 }) {
   try {
     //  Recuperar los embeddings 
-    const contextData = await getContextEmbeddings();
+    const contextDataArray = await getContextEmbeddings();
+    const contextData = contextDataArray
+      .filter(item => item.content)
+      .map(item => `- ${item.content}`)
+      .join("\n");
 
-    // 2. Mocking o lógica de búsqueda de contexto
-    const context = [{ metadata: { sentiment: "positive" } }];
+    console.log(contextData);
+
 
     // 3. Scoring determinístico + IA
     const aiArray = await calculateScore({
