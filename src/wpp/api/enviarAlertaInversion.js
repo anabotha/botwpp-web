@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { enviarAlertaInversionMail } from "../../services/mail/mail.service.js";
-
+import {storeAlertaInversion} from "../../services/alerts.service.js";
 // export async function enviarAlertaInversion({
 //   recomendacion,
 //   activo,
@@ -72,7 +72,9 @@ console.log("Alerta enviada");
  console.log("Enviando alerta inversión:");
 
   await enviarAlertaInversionMail({recomendacion,activo,tipo_activo,precio,detalle,mercado});
-
+  //enviar alerta por whatsapp.
+  //almacenar alerta en base de datos.
+  await storeAlertaInversion({recomendacion,activo,tipo_activo,precio,detalle,mercado});
   console.log("Alerta enviada correctamente");
 
 }

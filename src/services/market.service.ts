@@ -17,41 +17,10 @@ export const getAccionesIOL = async () => {
 
      return [...cedears, ...letras];
 };
-// // Lógica de agregación de TwelveData
-// export const getAccionesTD = async () => {
-//      const exchanges = ["NASDAQ", "NYSE"];
-//      console.log("llego getaccionesTD");
 
-//      const simbolos = await getSimbolosDb();
-//      console.log(simbolos, "simboolos");
-//      let acciones: any[] = [];
-
-//      for (const exch of exchanges) {
-//           for (const s of simbolos) {
-//                try {
-//                     console.log("llego al try de getaccionedtd", "simbolo ", s, exch);
-
-//                     // Llamamos a las funciones lógicas, no a Handlers de Express
-//                     const precio = await getPriceCommonStock(s.activo, exch);
-//                     const etf = await getPriceEtf(s.activo, exch);
-//                     console.log(precio);
-//                     if (precio) acciones.push({ simbolo: s.activo, precio: precio.price, exchange: exch, desc: "twelveData", CommonStock: true });
-//                     if (etf) acciones.push({ simbolo: s.activo, precio: etf.price, exchange: exch, desc: "twelveData", etf: true });
-//                } catch (e) {
-//                     console.error(`Error en ${s.activo}:`, e.message);
-//                }
-//           }
-//      }
-//      return acciones;
-// };
-// // En src/services/market.service.ts
-
-// // Lógica principal de evaluación
-
-export const getAccionesTD = async (activos: []) => {
+export const getAccionesTD = async (activos: [],simbolosInteres: any[]) => {
      const exchanges = ["NASDAQ", "NYSE"];
      let acciones: any[] = [];
-     const simbolosInteres = await getSimbolosInteresDb();
      // activos = [...activos, ...simbolosInteres]
      console.log(`Iniciando evaluación para ${activos.length} activos.`);
 
@@ -185,6 +154,7 @@ export function sampleRandom<T>(array: T[], n: number): T[] {
 export const ejecutarEvaluacionMercado = async () => {
      console.log("ejectura evaluaciokn mercado");
      let activos = await getSimbolosDb() ?? [];
+     const simbolosInteres : any[] = await getSimbolosInteresDb() ?? [];
 
      const esDiaLaboral = () => {
           const day = new Date().getDay();
@@ -200,11 +170,12 @@ export const ejecutarEvaluacionMercado = async () => {
      };
      console.log(totalMoney)
 
-     const simbolosSet = new Set(
-          activos.map(a => String(a.activo ?? a).trim().toUpperCase())
-     );
+     const simbolosSet = new Set([
+          ...activos.map(a => String(a.activo ?? a).trim().toUpperCase()),
+          ...simbolosInteres.map(a => String(a.activo ?? a).trim().toUpperCase())
+     ]);
 
-     const accionesTD = await getAccionesTD(activos);
+     const accionesTD = await getAccionesTD(activos,simbolosInteres);
      const accionesIOLTodas = await getAccionesIOL();
 
      const filtrados = accionesIOLTodas.filter(item =>

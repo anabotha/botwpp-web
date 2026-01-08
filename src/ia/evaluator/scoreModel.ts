@@ -67,6 +67,8 @@ export async function scoreMarketSignal(input: {
   try {
     //  Recuperar los embeddings 
     const contextDataArray = await getContextEmbeddings();
+    // const conterdata=getContext(input.marketSnapshot.embedding,"marketSnapshot");
+    // console.log(conterdata);
     const contextData = contextDataArray
       .filter(item => item.content)
       .map(item => `- ${item.content}`)

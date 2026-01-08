@@ -83,3 +83,18 @@ export async function getPriceEtf(accion: string, exchange: string) {
           throw error;
      }
 }
+
+export async function getHistory(symbol: string, exchange: string){
+     try {
+          const response = await fetch(`${BASE_URL}?symbol=${symbol}&exchange=${exchange}&type=common_stock&apikey=${process.env.TWELVE_DATA_API_KEY}`);
+          const data = await response.json();
+
+          if (data.status === "error") throw new Error(data.message);
+
+          console.log(`Precio Common Stock (${symbol}):`, data.price);
+          return data;
+     } catch (error) {
+          console.error("Error en getPriceCommonStock:", error);
+          throw error;
+     }
+}

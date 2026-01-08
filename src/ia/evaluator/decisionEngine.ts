@@ -40,7 +40,7 @@ Capital Total Disponible para invertir hoy: ${availableMoney}
 
 Perfil de Riesgo: Moderado.
 
-Meta: 12% de rendimineto semanal ideas. 2% de ganancia por dia minimo.
+Meta: 12% de rendimiento semanal ideas. 2% de ganancia por dia minimo.
 
 REGLAS CRÍTICAS:
 
@@ -60,9 +60,9 @@ Si la acción es HOLD: El valor debe ser 0. Solo pueden ser HOLD los activos que
 
 El score debe reflejar la convicción técnica/fundamental (0.0 a 1.0).
 
-Logica mercado:  Si pertenece al mercado argentino o estadounidense. Donde se deberia comprar p.ej : IOL, TD.
+Logica mercado:  Si pertenece al mercado argentino o estadounidense. Donde se deberia comprar p.ej : IOL, TD,NASDAQ.
 
-ESTRUCTURA DEL JSON: [ { "activo": "ticker", "tipo_activo": "CEDEAR/STOCK/ETF/LETRA", "action": "BUY/SELL/HOLD", "score": 0.00, "price": 0.00, "monto_sugerido": 0.00, "analisis": "Explicación técnica breve de la decisión","mercado":"IOL" } ]
+ESTRUCTURA DEL JSON: [ { "activo": "ticker", "tipo_activo": "CEDEAR/STOCK/ETF/LETRA/BONO", "action": "BUY/SELL/HOLD", "score": 0.00, "price": 0.00, "monto_sugerido": 0.00, "analisis": "Explicación técnica breve de la decisión","mercado":"IOL" } ]
 
 DATOS DE MERCADO PARA ANALIZAR:`
   });
@@ -77,8 +77,9 @@ export async function evaluarActivos(
 
   console.log("evaluaractivos");
 
-  //  Solo lo que no sea HOLD y tenga score >= 0.5
-  const best = activesArray.filter(act => act.action !== "HOLD" && act.score >= 0.5);
+  //  Solo lo que no sea HOLD o tenga score >= 0.5
+  const best = activesArray.filter(act => act.action !== "HOLD" && act.score >= 0.5).
+  sort((a, b) => b.score - a.score).slice(0, 5);
 
 
   for (let i = 0; i < best.length; i++) {
