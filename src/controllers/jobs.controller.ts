@@ -28,16 +28,20 @@ import { Request, Response } from 'express';
 // }
 export async function ejecutarEvaluacion(req: Request, res: Response) {
   const secret = req.header("x-cron-secret");
-console.log("secret", secret);
-console.log("secret", process.env.CRON_SECRET);
+
   if (!secret || secret !== process.env.CRON_SECRET) {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
   try {
-    console.log("Cron OK, entrando al controller");
+    console.log("Cron OK, iniciando evaluación");
+
+    await ejecutarEvaluacionMercado();
+
     return res.json({ ok: true });
-  } catch (error) {
-    return res.status(500).json({ error: "fail" });
+  } catch (error: any) {
+    console.error("Error en el proceso de Cron:", error);
+    return res.status(500).json({ ok: false });
   }
 }
+
