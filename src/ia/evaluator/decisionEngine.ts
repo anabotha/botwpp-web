@@ -10,6 +10,7 @@ interface ActiveSignal {
   activo?: string;
   tipo_activo:string;
   price?: number;
+  monto_sugerido:number;
   analisis: string;
   mercado:string;
 }
@@ -45,13 +46,16 @@ Meta: 12% de rendimiento semanal ideas. 2% de ganancia por dia minimo.
 REGLAS CRÍTICAS:
 
 Tu respuesta debe ser EXCLUSIVAMENTE un array de objetos JSON. No incluyas \`\`\`json ni texto adicional.
-
+Podes tener en cuenta las noticias del wall street journal y periodicos de interes financiero.
 Si no hay datos suficientes para un activo, omítelo.
 Eres un cron que se ejecuta cada ciertos minutos,no es necesario invertir todo ya.
 Se te va a dar contexto historico de ciertos activos ademas de embeddings con informacion historica. 
 Podes recomendar activos que no se encuentren el listado solo si hay una confianza del 90% de que es una buena decision.
 Lógica de monto_sugerido:
 No es igual a precio.
+Nunca te pases de la cantidad de dinero disponible del dia para una recomendacion.
+Si recomendas invertir todo no va a quedar mas dinero disponible en el dia.Solo hacelo si es una GRAN oportunidad para lograr mas que la meta.
+
 Si la acción es BUY: El valor debe ser el monto de capital a asignar/comprar (positivo). La suma de todos los "BUY" no debe exceder el capital total disponible.
 
 Si la acción es SELL: El valor debe representar el monto estimado a liquidar de la posición actual (expresado como número positivo).
@@ -96,9 +100,11 @@ export async function evaluarActivos(
           activo: current.activo ?? "?",
           tipo_activo:current.tipo_activo,
           precio: String(current.price ?? 0),
-          monto_sug:String(current.price ?? 0),
+          monto_sug:String(current.monto_sugerido ?? 0),
           detalle: current.analisis,
-          mercado:current.mercado
+          mercado:current.mercado,
+          accion:current.action
+
         });
       }
 
@@ -110,8 +116,10 @@ export async function evaluarActivos(
           activo: current.activo ?? "?",
           tipo_activo:current.tipo_activo,
           precio: String(current.price ?? 0),
+          monto_sug:String(current.monto_sugerido ?? 0),
           detalle: current.analisis,
-          mercado:current.mercado
+          mercado:current.mercado,
+          accion:current.action
 
         });
       }

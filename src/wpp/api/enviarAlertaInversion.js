@@ -57,13 +57,18 @@ export async function enviarAlertaInversion({
   activo,
   tipo_activo,
   precio,
+  monto_sug,
   detalle,
-  mercado
+  mercado,
+  accion
 }) {
 // console.log("llega a  alerta inversion")
 
 // console.log("Alerta enviada");
-//   console.log(recomendacion);
+  console.log(recomendacion);
+  console.log(tipo_activo);
+  console.log(monto_sug);
+
 //   console.log(activo);
 //   console.log(precio);
 //   console.log(detalle);
@@ -74,7 +79,16 @@ export async function enviarAlertaInversion({
   await enviarAlertaInversionMail({recomendacion,activo,tipo_activo,precio,monto_sug,detalle,mercado});
   //enviar alerta por whatsapp.
   //almacenar alerta en base de datos.
-  await storeAlertaInversion({recomendacion,activo,tipo_activo,precio,monto_sug,detalle,mercado});
+ await storeAlertaInversion({
+  accion,
+  activo,
+  tipo_activo,
+  mercado,
+  precio,
+  detalle,
+  trading_day_id
+});
+
   // console.log("Alerta enviada correctamente");
 
 }

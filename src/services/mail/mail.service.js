@@ -51,9 +51,12 @@ export async function enviarAlertaInversionMail(data) {
 };
 
 sendSmtpEmail.to = [
-  { email: "josefinabotha@gmail.com", name: "Usuario" },
-  {email:"axelkevinagustinrojas@gmail.com",name:"axel"}
+  { email: "josefinabotha@gmail.com", name: "zar de las finanzas" },
+  { email: "yapurairina1@gmail.com", name: "Iri" },
+  
 ];
+// {email:"axelkevinagustinrojas@gmail.com",name:"axel"},
+// {email:"facundovidal492@gmail.com",name:"facu"},
 
   sendSmtpEmail.htmlContent = alertaInversionTemplate(data);
 

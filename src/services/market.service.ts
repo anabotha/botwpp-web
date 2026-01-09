@@ -21,8 +21,7 @@ export const getAccionesIOL = async () => {
 export const getAccionesTD = async (activos: [],simbolosInteres: any[]) => {
      const exchanges = ["NASDAQ", "NYSE"];
      let acciones: any[] = [];
-     // activos = [...activos, ...simbolosInteres]
-     // console.log(`Iniciando evaluación para ${activos.length} activos.`);
+
 
      const mapaActivos = new Map();
 
@@ -92,59 +91,6 @@ export const getAccionesTD = async (activos: [],simbolosInteres: any[]) => {
 //
 
 
-// for (const s of activos) {
-//      // CORRECCIÓN CLAVE: Extraemos el string del ticker
-//      const ticker = typeof s === 'object' ? s.activo : s;
-//      let encontrado = false;
-
-//      for (const exch of exchanges) {
-//           if (encontrado) break; // Si ya lo encontramos en NASDAQ, no lo buscamos en NYSE
-
-//           try {
-//                console.log(`Buscando ${ticker} en ${exch}...`);
-
-//                // Intentamos ambos en paralelo para ahorrar tiempo, pero manejamos errores individualmente
-//                const [resStock, resEtf] = await Promise.allSettled([
-//                     getPriceCommonStock(ticker, exch),
-//                     getPriceEtf(ticker, exch)
-//                ]);
-
-//                // Procesar Common Stock
-//                if (resStock.status === "fulfilled" && resStock.value?.price) {
-//                     acciones.push({
-//                          simbolo: ticker,
-//                          precio: resStock.value.price,
-//                          exchange: exch,
-//                          tipo: "Common Stock",
-//                          cantidad: s.cantidad_total || 0 // Mantenemos el dato de tu DB
-//                     });
-//                     encontrado = true;
-//                     console.log(`✅ ${ticker} encontrado como Acción`);
-//                }
-
-//                // Procesar ETF
-//                if (resEtf.status === "fulfilled" && resEtf.value?.price) {
-//                     acciones.push({
-//                          simbolo: ticker,
-//                          precio: resEtf.value.price,
-//                          exchange: exch,
-//                          tipo: "ETF",
-//                          cantidad: s.cantidad_total || 0
-//                     });
-//                     encontrado = true;
-//                     console.log(`✅ ${ticker} encontrado como ETF`);
-//                }
-
-//           } catch (e: any) {
-//                // Solo logueamos si realmente es un error crítico, no si es un simple "not found"
-//                console.log(`Nota: ${ticker} no disponible en ${exch} como ese tipo.`);
-//           }
-//      }
-// }
-
-// console.log(`Total de activos cotizados: ${acciones.length}`);
-// return acciones;
-// };
 export function sampleRandom<T>(array: T[], n: number): T[] {
      return array
           .sort(() => Math.random() - 0.5)
