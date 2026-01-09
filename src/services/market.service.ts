@@ -6,7 +6,7 @@ import { runDecisionEngine } from "../ia/evaluator/decisionEngine";
 import { listen } from "node:quic";
 
 export const getAccionesIOL = async () => {
-     console.log("getAccionesIol")
+     // console.log("getAccionesIol")
      // IOL suele devolver un objeto que contiene una lista llamada 'titulos'
      const dataCedears = await getCedearsTodos();
      const dataLetras = await getLetrasTodas();
@@ -22,7 +22,7 @@ export const getAccionesTD = async (activos: [],simbolosInteres: any[]) => {
      const exchanges = ["NASDAQ", "NYSE"];
      let acciones: any[] = [];
      // activos = [...activos, ...simbolosInteres]
-     console.log(`Iniciando evaluación para ${activos.length} activos.`);
+     // console.log(`Iniciando evaluación para ${activos.length} activos.`);
 
      const mapaActivos = new Map();
 
@@ -58,7 +58,7 @@ export const getAccionesTD = async (activos: [],simbolosInteres: any[]) => {
      // 3. Bucle de consulta con Delay para Plan Free
      for (const item of listaFinal) {
           try {
-               console.log(`Evaluando ${item.ticker} (${item.poseido ? 'En Portafolio' : 'Interés'})...`);
+               // console.log(`Evaluando ${item.ticker} (${item.poseido ? 'En Portafolio' : 'Interés'})...`);
 
                let data;
                if (item.tipo === 'ETF') {
@@ -152,7 +152,7 @@ export function sampleRandom<T>(array: T[], n: number): T[] {
 }
 
 export const ejecutarEvaluacionMercado = async () => {
-     console.log("ejectura evaluaciokn mercado");
+     // console.log("ejectura evaluaciokn mercado");
      let activos = await getSimbolosDb() ?? [];
      const simbolosInteres : any[] = await getSimbolosInteresDb() ?? [];
 
@@ -168,7 +168,7 @@ export const ejecutarEvaluacionMercado = async () => {
           ars: getArs ?? 0,
           usd: getUsd ?? 0
      };
-     console.log(totalMoney)
+     // console.log(totalMoney)
 
      const simbolosSet = new Set([
           ...activos.map(a => String(a.activo ?? a).trim().toUpperCase()),
@@ -193,6 +193,6 @@ export const ejecutarEvaluacionMercado = async () => {
      // const accionesTD: [] = [];
 
      const marketSnapshot = [...accionesTD, ...accionesIOL];
-     console.log("ms", marketSnapshot); console.log("llego a marketservice")
+     // console.log("ms", marketSnapshot); console.log("llego a marketservice")
      return await runDecisionEngine(marketSnapshot, totalMoney);
 };

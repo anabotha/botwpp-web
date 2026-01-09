@@ -54,14 +54,14 @@ export async function getPriceCommonStock(accion: any, exchange: string) {
           const url = `${BASE_URL}?symbol=${symbol}&exchange=${exchange}&type=common_stock&apikey=${process.env.TWELVE_DATA_API_KEY}`;
 
           // Log para verificar la URL final antes de disparar
-          console.log("URL de consulta:", url);
+          // console.log("URL de consulta:", url);
 
           const response = await fetch(url);
           const data = await response.json();
 
           if (data.status === "error") throw new Error(data.message);
 
-          console.log(`✅ Precio obtenido (${symbol}):`, data.price, data);
+          // console.log(`✅ Precio obtenido (${symbol}):`, data.price, data);
           return data;
      } catch (error) {
           console.error(`❌ Error en getPriceCommonStock para ${symbol}:`, error.message);
@@ -76,7 +76,7 @@ export async function getPriceEtf(accion: string, exchange: string) {
 
           if (data.status === "error") throw new Error(data.message);
 
-          console.log(`Precio ETF (${accion}):`, data.price);
+          // console.log(`Precio ETF (${accion}):`, data.price);
           return data;
      } catch (error) {
           console.error("Error en getPriceEtf:", error);
@@ -91,7 +91,7 @@ export async function getHistory(symbol: string, exchange: string){
 
           if (data.status === "error") throw new Error(data.message);
 
-          console.log(`Precio Common Stock (${symbol}):`, data.price);
+          // console.log(`Precio Common Stock (${symbol}):`, data.price);
           return data;
      } catch (error) {
           console.error("Error en getPriceCommonStock:", error);

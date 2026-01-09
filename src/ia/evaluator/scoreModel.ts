@@ -31,7 +31,7 @@ async function calculateScore({ market, context, systemPrompt, availableMoney }:
     const response = await result.response;
     const aiText = response.text(); // Extraemos el texto de la respuesta
 
-    console.log("AI Response Text:", aiText);
+    // console.log("AI Response Text:", aiText);
 
     const cleanJson = aiText
       .replace(/```json/g, '')
@@ -74,7 +74,7 @@ export async function scoreMarketSignal(input: {
       .map(item => `- ${item.content}`)
       .join("\n");
 
-    console.log(contextData);
+    // console.log(contextData);
 
 
     // 3. Scoring determinístico + IA

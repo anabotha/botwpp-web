@@ -25,7 +25,7 @@ export async function runDecisionEngine(
   marketSnapshot: any,
   availableMoney: { ars: number; usd: number }
 ) {
-  console.log("Running Decision Engine for:", marketSnapshot);
+  // console.log("Running Decision Engine for:", marketSnapshot);
 
   const activesArray: ActiveSignal[] = await scoreMarketSignal({
     ticker: marketSnapshot.ticker || "UNKNOWN",
@@ -51,8 +51,8 @@ Eres un cron que se ejecuta cada ciertos minutos,no es necesario invertir todo y
 Se te va a dar contexto historico de ciertos activos ademas de embeddings con informacion historica. 
 Podes recomendar activos que no se encuentren el listado solo si hay una confianza del 90% de que es una buena decision.
 Lógica de monto_sugerido:
-
-Si la acción es BUY: El valor debe ser el monto de capital a asignar (positivo). La suma de todos los "BUY" no debe exceder el capital total disponible.
+No es igual a precio.
+Si la acción es BUY: El valor debe ser el monto de capital a asignar/comprar (positivo). La suma de todos los "BUY" no debe exceder el capital total disponible.
 
 Si la acción es SELL: El valor debe representar el monto estimado a liquidar de la posición actual (expresado como número positivo).
 
@@ -75,7 +75,7 @@ export async function evaluarActivos(
   activesArray: ActiveSignal[]
 ): Promise<ExecutionResult> {
 
-  console.log("evaluaractivos");
+  // console.log("evaluaractivos");
 
   //  Solo lo que no sea HOLD o tenga score >= 0.5
   const best = activesArray.filter(act => act.action !== "HOLD" && act.score >= 0.5).
@@ -89,20 +89,21 @@ export async function evaluarActivos(
     if (current.score > 0.7) {
 
       if (current.action === "BUY") {
-        console.log("Explanation generated:", current.analisis, "COMPRA");
+        // console.log("Explanation generated:", current.analisis, "COMPRA");
 
         await enviarAlertaInversion({
           recomendacion: "OPORTUNIDAD DETECTADA COMPRA",
           activo: current.activo ?? "?",
           tipo_activo:current.tipo_activo,
           precio: String(current.price ?? 0),
+          monto_sug:String(current.price ?? 0),
           detalle: current.analisis,
           mercado:current.mercado
         });
       }
 
       else if (current.action === "SELL") {
-        console.log("llega a sell", current);
+        // console.log("llega a sell", current);
 
         await enviarAlertaInversion({
           recomendacion: "OPORTUNIDAD DETECTADA - VENTA",

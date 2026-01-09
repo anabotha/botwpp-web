@@ -69,6 +69,6 @@ app.get("/status", (req, res) => {
 /* Listen */
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(` API Bot Inversiones corriendo en puerto ${PORT}`);
-  console.log(`CORS habilitado para: http://localhost:5173 y Vercel`);
+  // console.log(` API Bot Inversiones corriendo en puerto ${PORT}`);
+  // console.log(`CORS habilitado para: http://localhost:5173 y Vercel`);
 });

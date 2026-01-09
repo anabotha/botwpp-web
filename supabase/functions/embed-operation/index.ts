@@ -5,7 +5,7 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 serve(async (req) => {
   try {
     const { record } = await req.json()
-    console.log("Procesando registro ID:", record?.id);
+    // console.log("Procesando registro ID:", record?.id);
 
     // 1. Validar que el registro existe
     if (!record) throw new Error("No se recibió el objeto 'record'");
@@ -18,7 +18,7 @@ serve(async (req) => {
 
     // 4. Generar embedding
     const embedding = await session.run(content, { mean_pool: true, normalize: true });
-    console.log("Vector generado con éxito");
+    // console.log("Vector generado con éxito");
 
     // 5. Conectar con Service Role
     const supabase = createClient(

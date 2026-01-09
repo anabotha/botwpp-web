@@ -4,8 +4,8 @@ import { runDecisionEngine } from "./decisionEngine";
 // Mock global fetch to prevent actual network calls
 // @ts-ignore
 global.fetch = async (url: string, options: any) => {
-     console.log("Mock fetch called with URL:", url);
-     console.log("Payload:", options?.body);
+     // console.log("Mock fetch called with URL:", url);
+     // console.log("Payload:", options?.body);
      return {
           json: async () => ({ status: "success", id: "mock-message-id" })
      };

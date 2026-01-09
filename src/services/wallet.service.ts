@@ -4,7 +4,7 @@ import { supabase } from "../config/supabaseClient.js";
 // src/services/wallet.service.ts
 export const getTotalArs = async () => {
      const { data, error } = await supabase.rpc("get_disponible_ars");
-     console.log(data)
+     // console.log(data)
      if (error) throw error;
      return data;
 };

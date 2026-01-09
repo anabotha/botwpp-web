@@ -2,6 +2,7 @@ export function alertaInversionTemplate({
   recomendacion,
   activo,
   precio,
+  monto_sug,
   detalle,
   mercado,
 }) {
@@ -10,6 +11,8 @@ export function alertaInversionTemplate({
     <p><strong>Recomendación:</strong> ${recomendacion}</p>
     <p><strong>Activo:</strong> ${activo}</p>
     <p><strong>Precio:</strong> ${precio}</p>
+    <p><strong>Monto sugerido:</strong> ${monto_sug}</p>
+
     <p><strong>Mercado:</strong> ${mercado}</p>
     <p>${detalle}</p>
   `;
