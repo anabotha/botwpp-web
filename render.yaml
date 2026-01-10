@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: botwpp
+    env: node
+    plan: standard
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    routes:
+      - path: /
+        priority: 100
+    crons:
+      - id: ejecutarEvaluacion
+        schedule: "*/30 9-18 * * *"
+        startCommand: curl https://api-inversiones.onrender.com/api/jobs/jobs/evaluar

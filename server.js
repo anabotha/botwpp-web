@@ -1,19 +1,6 @@
 // server.js
-import cron from 'node-cron';
-const { ejecutarEvaluacion } = require('./controllers/jobs.controller.js');
-
-// Cron job: cada 30 min de 9-18hs (ajustar timezone)
-cron.schedule('*/30 9-18 * * *', async () => {
-  console.log('🔄 Ejecutando evaluación programada...');
-  try {
-    await ejecutarEvaluacion();
-    console.log('✅ Evaluación completada');
-  } catch (error) {
-    console.error('❌ Error en evaluación:', error);
-  }
-}, {
-  timezone: "America/Argentina/Buenos_Aires"
-});
+// Los cron jobs se configuran en render.yaml para Render con plan pago
+// No usar node-cron en este contexto
 
 // Tu app Express continúa normal
 app.listen(PORT, () => {
