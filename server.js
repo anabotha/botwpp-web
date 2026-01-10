@@ -1,5 +1,5 @@
 // server.js
-const cron = require('node-cron');
+import cron from 'node-cron';
 const { ejecutarEvaluacion } = require('./controllers/jobs.controller.js');
 
 // Cron job: cada 30 min de 9-18hs (ajustar timezone)

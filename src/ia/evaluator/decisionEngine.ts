@@ -52,7 +52,7 @@ Eres un cron que se ejecuta cada ciertos minutos,no es necesario invertir todo y
 Se te va a dar contexto historico de ciertos activos ademas de embeddings con informacion historica. 
 Podes recomendar activos que no se encuentren el listado solo si hay una confianza del 90% de que es una buena decision.
 Lógica de monto_sugerido:
-No es igual a precio.
+No es igual a precio. 
 Nunca te pases de la cantidad de dinero disponible del dia para una recomendacion.
 Si recomendas invertir todo no va a quedar mas dinero disponible en el dia.Solo hacelo si es una GRAN oportunidad para lograr mas que la meta.
 

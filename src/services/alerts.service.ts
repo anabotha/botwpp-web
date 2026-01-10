@@ -7,7 +7,6 @@ export const storeAlertaInversion = async ({
   mercado,
   precio,
   detalle,
-  trading_day_id
 }: any) => {
 
   if (!accion) {
@@ -23,7 +22,6 @@ export const storeAlertaInversion = async ({
       mercado,
       precio,
       detalle,
-      trading_day_id
     });
 
   if (error) {

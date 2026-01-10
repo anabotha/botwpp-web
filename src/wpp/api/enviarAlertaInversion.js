@@ -85,8 +85,8 @@ export async function enviarAlertaInversion({
   tipo_activo,
   mercado,
   precio,
-  detalle,
-  trading_day_id
+  detalle
+  // ,trading_day_id
 });
 
   // console.log("Alerta enviada correctamente");
