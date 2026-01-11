@@ -1,3 +1,6 @@
+import { ejecutarEvaluacionMercado } from "../services/market.service.ts";
+
+
 // src/services/evaluacion.service.ts
 export async function ejecutarEvaluacionCore() {
   console.log("⚙️ Ejecutando evaluación de mercado");
