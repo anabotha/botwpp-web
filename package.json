@@ -29,5 +29,10 @@
     "dev": "nodemon --exec npx tsx app.js",
     "build": "tsc",
     "start": "npx tsx app.js"
+  },
+  "cron": {
+    "evaluarMercado": "node dist/jobs/evaluarMercado.js"
   }
+  
+
 }
