@@ -22,7 +22,7 @@ async function test() {
      };
 
      try {
-          const result = await runDecisionEngine(marketSnapshot);
+          const result = await runDecisionEngine(marketSnapshot,{ ars: 100000, usd: 5000 });
           console.log("Result:", result);
 
           if (result.executed) {

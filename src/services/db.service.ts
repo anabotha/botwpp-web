@@ -1,6 +1,10 @@
 import { supabase } from "../config/supabaseClient.js";
 
-
+export interface SimboloInteres{
+  activo: string;
+  exchange: string;
+  tipo: string;
+}
 export const getSimbolosDb = async () => {
      const { data, error } = await supabase.rpc("get_simbolos");
 
