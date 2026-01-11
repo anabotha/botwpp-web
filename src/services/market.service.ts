@@ -4,7 +4,14 @@ import { getTotalArs, getTotalUsd } from "./wallet.service";
 import { getCedearsTodos, getLetrasTodas } from "./marketIOL.service";
 import { runDecisionEngine } from "../ia/evaluator/decisionEngine";
 import { listen } from "node:quic";
-
+export interface simbolosActivos{
+     activo: string;
+     exchange: string;
+     tipo_activo: string;
+     poseido: boolean;
+     costo_promedio: number;
+     cantidad_total: number;
+}
 export const getAccionesIOL = async () => {
      // console.log("getAccionesIol")
      // IOL suele devolver un objeto que contiene una lista llamada 'titulos'
@@ -18,7 +25,7 @@ export const getAccionesIOL = async () => {
      return [...cedears, ...letras];
 };
 
-export const getAccionesTD = async (activos: [],simbolosInteres: any[]) => {
+export const getAccionesTD = async (activos: simbolosActivos[],simbolosInteres: any[]) => {
      const exchanges = ["NASDAQ", "NYSE"];
      let acciones: any[] = [];
 

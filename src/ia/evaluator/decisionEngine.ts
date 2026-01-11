@@ -125,4 +125,10 @@ export async function evaluarActivos(
       }
     }
   }
+
+  return {
+    executed: best.length > 0,
+    score: best.length > 0 ? best[0].score : undefined,
+    explanation: best.length > 0 ? best[0].analisis : "No actionable signals found"
+  };
 }
