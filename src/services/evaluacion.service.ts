@@ -1,4 +1,4 @@
-import { ejecutarEvaluacionMercado } from "../services/market.service.ts";
+import { ejecutarEvaluacionMercado } from "../services/market.service";
 
 
 // src/services/evaluacion.service.ts

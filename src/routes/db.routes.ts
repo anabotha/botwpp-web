@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAllEmbeddings } from '../controllers/embeddings.controller.ts';
+import { getAllEmbeddings } from '../controllers/embeddings.controller';
 
 const router = Router();
 
