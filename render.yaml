@@ -11,4 +11,4 @@ services:
     crons:
       - id: ejecutarEvaluacion
         schedule: "*/30 9-18 * * *"
-        startCommand: curl https://api-inversiones.onrender.com/api/jobs/jobs/evaluar
+        startCommand: curl https://api-inversiones.onrender.com/api/jobs/evaluar
