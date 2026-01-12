@@ -146,7 +146,8 @@ export const ejecutarEvaluacionMercado = async () => {
 
      const marketSnapshot = [...accionesTD, ...accionesIOL];
      if (marketSnapshot.length <2) {
-          return { message: "No hay datos de mercado para evaluar" };
+          console.log("No hay datos suficientes para evaluar");
+  return [];
      }
      console.log("ms", marketSnapshot); console.log("llego a marketservice")
      return await runDecisionEngine(marketSnapshot, totalMoney);

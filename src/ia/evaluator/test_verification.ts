@@ -15,7 +15,6 @@ async function test() {
      console.log("Starting Verification Test");
 
      const marketSnapshot = {
-          ticker: "TEST-COIN",
           price: 50000,
           priceChange: 5.0, // Should trigger +0.3
           volumeSpike: true // Should trigger +0.2

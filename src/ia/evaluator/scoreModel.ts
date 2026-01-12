@@ -58,7 +58,6 @@ async function calculateScore({ market, context, systemPrompt, availableMoney }:
 
 
 export async function scoreMarketSignal(input: {
-  ticker: string;
   availableMoney: { ars: number, usd: number };
   marketSnapshot: any;
   signalText: string;

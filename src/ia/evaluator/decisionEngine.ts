@@ -29,10 +29,9 @@ export async function runDecisionEngine(
   console.log("Running Decision Engine for:", marketSnapshot);
 
   const activesArray: ActiveSignal[] = await scoreMarketSignal({
-    ticker: marketSnapshot.ticker || "UNKNOWN",
     availableMoney: { ars: availableMoney.ars, usd: availableMoney.usd },
     marketSnapshot,
-    signalText: `Market update for ${marketSnapshot.ticker}: Price ${marketSnapshot.price}, Change ${marketSnapshot.priceChange}%`,
+    signalText: `market snapshot`,
     systemPrompt: `Actúa como un Analista de Inversiones Cuantitativo profesional, especializado en gestión de cartera de corto plazo (swing / intraday).
 Tu tarea es analizar datos de mercado, contexto histórico y noticias financieras relevantes para generar recomendaciones accionables, priorizando control de riesgo, consistencia y uso eficiente del capital.
 
