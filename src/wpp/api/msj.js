@@ -1,5 +1,9 @@
 // enviarAlerta.js
 
+const WHATSAPP_BUSINESS_PHONE_NUMBER_ID = process.env.WHATSAPP_BUSINESS_PHONE_NUMBER_ID;
+const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
+const WHATSAPP_USER_PHONE_NUMBER = process.env.WHATSAPP_USER_PHONE_NUMBER;
+
 async function enviarAlerta(texto:string) {
 
   const url = `https://graph.facebook.com/v20.0/${ WHATSAPP_BUSINESS_PHONE_NUMBER_ID}/messages`;
