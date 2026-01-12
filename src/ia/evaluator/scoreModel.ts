@@ -48,11 +48,17 @@ async function calculateScore({ market, context, systemPrompt, availableMoney }:
       console.error("Error al parsear el JSON de la IA:", error);
     }
 
-  } catch (error) {
+  } catch (error: any) {
+    // Detectar error 429 (Rate Limit / Quota Exceeded)
+    if (error?.status === 429 || error?.message?.includes('429') || error?.message?.includes('quota')) {
+      console.warn("⚠️ Error 429 - Quota excedida en Gemini API. Retornando array vacío.");
+      return []; // Devolver array vacío para que el proceso continúe
+    }
+    
     console.error("Error detallado de la IA:", error);
   }
 
-  return;
+  return [];
 }
 
 
@@ -83,8 +89,11 @@ export async function scoreMarketSignal(input: {
       systemPrompt: input.systemPrompt,
       availableMoney: input.availableMoney
     });
-console.log("AI Array:", aiArray);
-    return aiArray;
+
+    console.log("AI Array:", aiArray);
+    
+    // Si aiArray es undefined o null, devolver array vacío
+    return aiArray || [];
   } catch (error) {
     console.error("Error en scoreMarketSignal:", error);
     throw error;

@@ -217,53 +217,70 @@ export async function evaluarActivos(
 
   console.log("evaluaractivos");
 
-  //  Solo lo que no sea HOLD o tenga score >= 0.5
-  const best = activesArray.filter(act => act.action !== "HOLD" && act.score >= 0.5).
-  sort((a, b) => b.score - a.score).slice(0, 5);
-
-
-  for (let i = 0; i < best.length; i++) {
-    const current = best[i];
-
-
-    if (current.score > 0.7) {
-console.log(current.price,"price current");
-      if (current.action === "BUY") {
-        // console.log("Explanation generated:", current.analisis, "COMPRA");
-        await enviarAlertaInversion({
-          recomendacion: "OPORTUNIDAD DETECTADA COMPRA",
-          activo: current.activo ?? "?",
-          tipo_activo:current.tipo_activo,
-          precio: String(current.price ?? 0),
-          monto_sug:String(current.monto_sugerido ?? 0),
-          detalle: current.analisis,
-          mercado:current.mercado,
-          accion:current.action
-
-        });
-      }
-
-      else if (current.action === "SELL") {
-        // console.log("llega a sell", current);
-
-        await enviarAlertaInversion({
-          recomendacion: "OPORTUNIDAD DETECTADA - VENTA",
-          activo: current.activo ?? "?",
-          tipo_activo:current.tipo_activo,
-          precio: String(current.price ?? 0),
-          monto_sug:String(current.monto_sugerido ?? 0),
-          detalle: current.analisis,
-          mercado:current.mercado,
-          accion:current.action
-
-        });
-      }
-    }
+  // Validar que activesArray es un array válido
+  if (!activesArray || !Array.isArray(activesArray) || activesArray.length === 0) {
+    console.warn("⚠️ No hay activos para evaluar. Array vacío o inválido.");
+    return {
+      executed: false,
+      explanation: "No hay datos para generar recomendaciones (quota excedida o sin datos)"
+    };
   }
 
-  return {
-    executed: best.length > 0,
-    score: best.length > 0 ? best[0].score : undefined,
-    explanation: best.length > 0 ? best[0].analisis : "No actionable signals found"
-  };
+  try {
+    //  Solo lo que no sea HOLD o tenga score >= 0.5
+    const best = activesArray.filter(act => act.action !== "HOLD" && act.score >= 0.5).
+    sort((a, b) => b.score - a.score).slice(0, 5);
+
+
+    for (let i = 0; i < best.length; i++) {
+      const current = best[i];
+
+
+      if (current.score > 0.7) {
+console.log(current.price,"price current");
+        if (current.action === "BUY") {
+          // console.log("Explanation generated:", current.analisis, "COMPRA");
+          await enviarAlertaInversion({
+            recomendacion: "OPORTUNIDAD DETECTADA COMPRA",
+            activo: current.activo ?? "?",
+            tipo_activo:current.tipo_activo,
+            precio: String(current.price ?? 0),
+            monto_sug:String(current.monto_sugerido ?? 0),
+            detalle: current.analisis,
+            mercado:current.mercado,
+            accion:current.action
+
+          });
+        }
+
+        else if (current.action === "SELL") {
+          // console.log("llega a sell", current);
+
+          await enviarAlertaInversion({
+            recomendacion: "OPORTUNIDAD DETECTADA - VENTA",
+            activo: current.activo ?? "?",
+            tipo_activo:current.tipo_activo,
+            precio: String(current.price ?? 0),
+            monto_sug:String(current.monto_sugerido ?? 0),
+            detalle: current.analisis,
+            mercado:current.mercado,
+            accion:current.action
+
+          });
+        }
+      }
+    }
+
+    return {
+      executed: best.length > 0,
+      score: best.length > 0 ? best[0].score : undefined,
+      explanation: best.length > 0 ? best[0].analisis : "No actionable signals found"
+    };
+  } catch (error: any) {
+    console.error("❌ Error en evaluarActivos:", error.message);
+    return {
+      executed: false,
+      explanation: `Error durante evaluación: ${error.message}`
+    };
+  }
 }
