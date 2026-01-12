@@ -103,7 +103,7 @@ Solo puede aplicarse a activos que ya se poseen.
 
 Score de convicción
 
-Rango válido: 0.00 a 1.00
+Rango válido: 0.00 a 1.00 . Sol van a ser consideradas las recomendaciones con score >= 0.7
 
 Debe reflejar coherencia entre señales técnicas, contexto y riesgo.
 
