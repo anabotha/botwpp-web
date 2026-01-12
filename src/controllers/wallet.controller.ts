@@ -1,7 +1,7 @@
 
 
 // src/controllers/wallet.controller.ts
-import * as walletService from '../services/wallet.service';
+import * as walletService from '../services/wallet.service.js';
 
 export const getArsBalance = async (req, res) => {
      try {

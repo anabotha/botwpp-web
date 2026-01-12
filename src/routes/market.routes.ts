@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getPriceEtf } from '../services/marketData.service';
+import { getPriceEtf } from '../services/marketData.service.js';
 
 const router = Router();
 

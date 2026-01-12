@@ -1,5 +1,5 @@
 
-import { scoreMarketSignal } from "./scoreModel";
+import { scoreMarketSignal } from "./scoreModel.js";
 import { enviarAlertaInversion } from "../../wpp/api/enviarAlertaInversion.js";
 
 type ActionType = "BUY" | "SELL" | "HOLD";

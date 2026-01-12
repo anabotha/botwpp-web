@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { getSimbolosDb } from '../services/db.service';
-import { getPriceCommonStock } from '../services/marketData.service';
+import { getSimbolosDb } from '../services/db.service.js';
+import { getPriceCommonStock } from '../services/marketData.service.js';
 
 const router = Router();
 

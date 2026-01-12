@@ -1,7 +1,7 @@
 import { generateEmbedding } from "../embeddings/generator";
 import { supabase } from "../../config/supabaseClient.js";
 import { GoogleGenAI } from "@google/genai";
-import { getContextEmbeddings } from "../../services/embeddings.service"; // IMPORTAR EL SERVICIO
+import { getContextEmbeddings } from "../../services/embeddings.service.js"; // IMPORTAR EL SERVICIO
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export interface SignalInterface {

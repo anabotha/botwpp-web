@@ -1,4 +1,4 @@
-import * as embeddingsService from "../services/embeddings.service";
+import * as embeddingsService from "../services/embeddings.service.js";
 
 export const getAllEmbeddings = async (req, res) => {
      try {

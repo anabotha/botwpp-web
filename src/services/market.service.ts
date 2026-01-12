@@ -1,8 +1,8 @@
-import { getSimbolosDb, getSimbolosInteresDb } from "./db.service";
-import { getPriceCommonStock, getPriceEtf } from "./marketData.service";
-import { getTotalArs, getTotalUsd } from "./wallet.service";
-import { getCedearsTodos, getLetrasTodas } from "./marketIOL.service";
-import { runDecisionEngine } from "../ia/evaluator/decisionEngine";
+import { getSimbolosDb, getSimbolosInteresDb } from "./db.service.js";
+import { getPriceCommonStock, getPriceEtf } from "./marketData.service.js";
+import { getTotalArs, getTotalUsd } from "./wallet.service.js";
+import { getCedearsTodos, getLetrasTodas } from "./marketIOL.service.js";
+import { runDecisionEngine } from "../ia/evaluator/decisionEngine.js";
 import { listen } from "node:quic";
 export interface simbolosActivos{
      activo: string;

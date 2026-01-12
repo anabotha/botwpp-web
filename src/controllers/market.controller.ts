@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import * as marketService from '../services/market.service';
-import { getPriceCommonStock } from '../services/marketData.service';
+import * as marketService from '../services/market.service.js';
+import { getPriceCommonStock } from '../services/marketData.service.js';
 
 export const getPriceHandler = async (req: Request, res: Response) => {
      try {

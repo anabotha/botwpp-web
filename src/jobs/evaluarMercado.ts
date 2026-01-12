@@ -1,5 +1,5 @@
 // src/jobs/evaluarMercado.ts
-import { ejecutarEvaluacionMercado } from "../services/market.service";
+import { ejecutarEvaluacionMercado } from "../services/market.service.js";
 
 async function run() {
   console.log("⏰ Cron Job: iniciando evaluación");
