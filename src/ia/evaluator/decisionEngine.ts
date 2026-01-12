@@ -191,10 +191,9 @@ export async function evaluarActivos(
 
 
     if (current.score > 0.7) {
-
+console.log(current.price,"price current");
       if (current.action === "BUY") {
         // console.log("Explanation generated:", current.analisis, "COMPRA");
-
         await enviarAlertaInversion({
           recomendacion: "OPORTUNIDAD DETECTADA COMPRA",
           activo: current.activo ?? "?",
