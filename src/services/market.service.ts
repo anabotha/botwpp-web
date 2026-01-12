@@ -3,7 +3,7 @@ import { getPriceCommonStock, getPriceEtf } from "./marketData.service.js";
 import { getTotalArs, getTotalUsd } from "./wallet.service.js";
 import { getCedearsTodos, getLetrasTodas } from "./marketIOL.service.js";
 import { runDecisionEngine } from "../ia/evaluator/decisionEngine.js";
-import { listen } from "node:quic";
+
 export interface simbolosActivos{
      activo: string;
      exchange: string;
@@ -27,7 +27,6 @@ export const getAccionesIOL = async () => {
 
 export const getAccionesTD = async (activos: simbolosActivos[],simbolosInteres: any[]) => {
      const exchanges = ["NASDAQ", "NYSE"];
-     let acciones: any[] = [];
 
 
      const mapaActivos = new Map();
@@ -146,6 +145,9 @@ export const ejecutarEvaluacionMercado = async () => {
      // const accionesTD: [] = [];
 
      const marketSnapshot = [...accionesTD, ...accionesIOL];
+     if (marketSnapshot.length <3 || marketSnapshot.every(item => item.price === undefined) || marketSnapshot.every(item => item.price === null)) {
+          return { message: "No hay datos de mercado para evaluar" };
+     }
      // console.log("ms", marketSnapshot); console.log("llego a marketservice")
      return await runDecisionEngine(marketSnapshot, totalMoney);
 };

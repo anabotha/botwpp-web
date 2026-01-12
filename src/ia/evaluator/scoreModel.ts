@@ -84,7 +84,7 @@ export async function scoreMarketSignal(input: {
       systemPrompt: input.systemPrompt,
       availableMoney: input.availableMoney
     });
-
+console.log("AI Array:", aiArray);
     return aiArray;
   } catch (error) {
     console.error("Error en scoreMarketSignal:", error);

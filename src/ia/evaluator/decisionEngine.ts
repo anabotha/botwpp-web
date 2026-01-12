@@ -26,7 +26,7 @@ export async function runDecisionEngine(
   marketSnapshot: any,
   availableMoney: { ars: number; usd: number }
 ) {
-  // console.log("Running Decision Engine for:", marketSnapshot);
+  console.log("Running Decision Engine for:", marketSnapshot);
 
   const activesArray: ActiveSignal[] = await scoreMarketSignal({
     ticker: marketSnapshot.ticker || "UNKNOWN",
