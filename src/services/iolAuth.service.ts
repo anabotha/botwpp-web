@@ -26,7 +26,11 @@ export async function getValidToken() {
      return session.accessToken;
 }
 
-function hydrateSession(data) {
+function hydrateSession(data: {
+     access_token: string;
+     refresh_token: string;
+     expires_in: number;
+}) {
      session.accessToken = data.access_token;
      session.refreshToken = data.refresh_token;
      session.expiresAt = Date.now() + data.expires_in * 1000;

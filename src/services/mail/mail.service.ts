@@ -40,7 +40,7 @@ const apiInstance = new Brevo.TransactionalEmailsApi();
 // 2. Configurar la API Key directamente en el cliente de la instancia
 apiInstance.setApiKey(Brevo.TransactionalEmailsApiApiKeys.apiKey, process.env.BREVO_API_KEY);
 
-export async function enviarAlertaInversionMail(data) {
+export async function enviarAlertaInversionMail(data: any) {
   // 3. Usar el constructor de Brevo para el objeto de email
   const sendSmtpEmail = new Brevo.SendSmtpEmail();
 

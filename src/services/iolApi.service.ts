@@ -19,7 +19,7 @@ export async function initialToken() {
   return data;
 }
 
-export async function extendSession(refreshToken){
+export async function extendSession(refreshToken:string){
      const response = await fetch("https://api.invertironline.com/token", {
        method: "POST",
        headers: {

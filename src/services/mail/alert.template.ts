@@ -6,6 +6,14 @@ export function alertaInversionTemplate({
   monto_sug,
   detalle,
   mercado,
+}: {
+  recomendacion: string;
+  activo: string;
+  tipo_activo: string;
+  precio: number;
+  monto_sug: number;
+  detalle: string;
+  mercado: string;
 }) {
   return `
     <h2>Alerta de Inversión</h2>
