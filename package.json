@@ -25,11 +25,12 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   },
-  "scripts": {
-    "dev": "nodemon --exec npx tsx app.js",
-    "build": "tsc -p tsconfig.json",
-    "start": "npx tsx app.js"
-  }
+ "scripts": {
+  "dev": "nodemon --exec npx tsx app.js",
+  "build": "tsc -p tsconfig.build.json",
+  "start": "npx tsx app.js"
+}
+
   
 
 }
