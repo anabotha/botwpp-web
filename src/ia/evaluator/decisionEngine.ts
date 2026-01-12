@@ -180,7 +180,7 @@ export async function evaluarActivos(
   activesArray: ActiveSignal[]
 ): Promise<ExecutionResult> {
 
-  // console.log("evaluaractivos");
+  console.log("evaluaractivos");
 
   //  Solo lo que no sea HOLD o tenga score >= 0.5
   const best = activesArray.filter(act => act.action !== "HOLD" && act.score >= 0.5).

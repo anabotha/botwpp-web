@@ -105,7 +105,7 @@ export function sampleRandom<T>(array: T[], n: number): T[] {
 
 export const ejecutarEvaluacionMercado = async () => {
      // console.log("ejectura evaluaciokn mercado");
-     let activos = await getSimbolosDb() ?? [];
+     let activos: any[] = await getSimbolosDb() ?? [];
      const simbolosInteres : any[] = await getSimbolosInteresDb() ?? [];
 
      const esDiaLaboral = () => {
@@ -148,6 +148,6 @@ export const ejecutarEvaluacionMercado = async () => {
      if (marketSnapshot.length <3 || marketSnapshot.every(item => item.price === undefined) || marketSnapshot.every(item => item.price === null)) {
           return { message: "No hay datos de mercado para evaluar" };
      }
-     // console.log("ms", marketSnapshot); console.log("llego a marketservice")
+     console.log("ms", marketSnapshot); console.log("llego a marketservice")
      return await runDecisionEngine(marketSnapshot, totalMoney);
 };

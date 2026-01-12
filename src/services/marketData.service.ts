@@ -61,7 +61,7 @@ export async function getPriceCommonStock(accion: any, exchange: string) {
 
           if (data.status === "error") throw new Error(data.message);
 
-          // console.log(`✅ Precio obtenido (${symbol}):`, data.price, data);
+          console.log(`✅ Precio obtenido (${symbol}):`, data.price, data);
           return data;
      } catch (error) {
           console.error(`❌ Error en getPriceCommonStock para ${symbol}:`, error.message);
