@@ -145,7 +145,7 @@ export const ejecutarEvaluacionMercado = async () => {
      // const accionesTD: [] = [];
 
      const marketSnapshot = [...accionesTD, ...accionesIOL];
-     if (marketSnapshot.length <3 || marketSnapshot.every(item => item.price === undefined) || marketSnapshot.every(item => item.price === null)) {
+     if (marketSnapshot.length <2) {
           return { message: "No hay datos de mercado para evaluar" };
      }
      console.log("ms", marketSnapshot); console.log("llego a marketservice")
