@@ -138,7 +138,7 @@ export const ejecutarEvaluacionMercado = async () => {
           !simbolosSet.has(String(item.simbolo).trim().toUpperCase())
      );
 
-     const randomExtra = sampleRandom(candidatasRandom, 8);
+     const randomExtra = sampleRandom(candidatasRandom, 15);
 
      const accionesIOL = [...filtrados, ...randomExtra];
      // const accionesIOL: [] = [];
