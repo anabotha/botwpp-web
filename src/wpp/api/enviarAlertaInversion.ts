@@ -61,7 +61,17 @@ export async function enviarAlertaInversion({
   detalle,
   mercado,
   accion
-}) {
+}: {
+  recomendacion: string;
+  activo: string;
+  tipo_activo: string;
+  precio: string;
+  monto_sug: string;
+  detalle: string;
+  mercado: string;
+  accion: string;
+}  
+) {
 // console.log("llega a  alerta inversion")
 
 // console.log("Alerta enviada");

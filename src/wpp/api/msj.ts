@@ -1,6 +1,6 @@
 // enviarAlerta.js
 
-async function enviarAlerta(texto) {
+async function enviarAlerta(texto:string) {
 
   const url = `https://graph.facebook.com/v20.0/${ WHATSAPP_BUSINESS_PHONE_NUMBER_ID}/messages`;
 
