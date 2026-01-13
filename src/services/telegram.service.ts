@@ -61,9 +61,7 @@ ${mercado ? `<b>Mercado:</b> ${mercado}` : ""}
 <b>Detalle:</b>
 ${detalle}
 
----
-${new Date().toLocaleString("es-AR")}
-  `.trim();
+`;
 
   return sendTelegramMessage(formattedMessage);
 };
