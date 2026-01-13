@@ -208,9 +208,7 @@ export async function evaluarActivos(
 
   console.log("evaluaractivos");
 
-  // Validar que activesArray es un array válido
-  if (!activesArray || !Array.isArray(activesArray) || activesArray.length === 0) {
-    console.warn("⚠️ No hay activos para evaluar. Array vacío o inválido.");
+  if (!activesArray?.length) {
     return {
       executed: false,
       explanation: "No hay datos para generar recomendaciones (quota excedida o sin datos)"
@@ -218,68 +216,80 @@ export async function evaluarActivos(
   }
 
   try {
-    //  Solo lo que no sea HOLD o tenga score >= 0.5
-    const best = activesArray.filter(act => act.action !== "HOLD" && act.score >= 0.7).
-    sort((a, b) => b.score - a.score).slice(0, 5);
-
-    // Check if it's 9am-12pm GMT-5 and sort BUYs before SELLs
     const now = new Date();
-    const gmtMinus5 = new Date(now.toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }));
+    const gmtMinus5 = new Date(
+      now.toLocaleString("en-US", { timeZone: "America/New_York" }) // GMT-5 / NYSE
+    );
     const hour = gmtMinus5.getHours();
     const isMorningTrading = hour >= 9 && hour < 12;
 
-    const sortedBest = isMorningTrading
-      ? best.sort((a, b) => {
-          if (a.action === "BUY" && b.action !== "BUY") return -1;
-          if (a.action !== "BUY" && b.action === "BUY") return 1;
-          return b.score - a.score;
-        })
-      : best.sort((a, b) => b.score - a.score); 
-      
-      for (let i = 0; i < sortedBest.length; i++) {
-      const current = sortedBest[i];
+    let buys: ActiveSignal[] = [];
+    let sells: ActiveSignal[] = [];
 
+    if (isMorningTrading) {
+      // 🔹 PRIORIDAD: respetar orden original del array
+      buys = activesArray
+        .filter(a => a.action === "BUY" && a.score >= 0.7)
+        .sort((a, b) => b.score - a.score)
 
-      if (current.score >= 0.7) {
-console.log(current.price,"price current");
-        if (current.action === "BUY") {
-          // console.log("Explanation generated:", current.analisis, "COMPRA");
-          await enviarAlertaInversion({
-            recomendacion: "OPORTUNIDAD DETECTADA COMPRA",
-            activo: current.activo ?? "?",
-            tipo_activo:current.tipo_activo,
-            precio: String(current.price ?? 0),
-            monto_sug:String(current.monto_sugerido ?? 0),
-            detalle: current.analisis,
-            mercado:current.mercado,
-            accion:current.action
+        .slice(0, 4);
 
-          });
-        }
+      sells = activesArray
+        .filter(a => a.action === "SELL" && a.score >= 0.7)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 3);
 
-        else if (current.action === "SELL") {
-          // console.log("llega a sell", current);
+    } else {
+      // 🔹 Lógica normal: ordenar por score
+      buys = activesArray
+        .filter(a => a.action === "BUY" && a.score >= 0.7)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 4);
 
-          await enviarAlertaInversion({
-            recomendacion: "OPORTUNIDAD DETECTADA - VENTA",
-            activo: current.activo ?? "?",
-            tipo_activo:current.tipo_activo,
-            precio: String(current.price ?? 0),
-            monto_sug:String(current.monto_sugerido ?? 0),
-            detalle: current.analisis,
-            mercado:current.mercado,
-            accion:current.action
+      sells = activesArray
+        .filter(a => a.action === "SELL" && a.score >= 0.7)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 4);
+    }
 
-          });
-        }
+    const best = [...buys, ...sells];
+
+    for (const current of best) {
+      console.log(current.price, "price current");
+
+      if (current.action === "BUY") {
+        await enviarAlertaInversion({
+          recomendacion: "OPORTUNIDAD DETECTADA COMPRA",
+          activo: current.activo ?? "?",
+          tipo_activo: current.tipo_activo,
+          precio: String(current.price ?? 0),
+          monto_sug: String(current.monto_sugerido ?? 0),
+          detalle: current.analisis,
+          mercado: current.mercado,
+          accion: current.action
+        });
+      }
+
+      if (current.action === "SELL") {
+        await enviarAlertaInversion({
+          recomendacion: "OPORTUNIDAD DETECTADA VENTA",
+          activo: current.activo ?? "?",
+          tipo_activo: current.tipo_activo,
+          precio: String(current.price ?? 0),
+          monto_sug: String(current.monto_sugerido ?? 0),
+          detalle: current.analisis,
+          mercado: current.mercado,
+          accion: current.action
+        });
       }
     }
 
     return {
       executed: best.length > 0,
-      score: best.length > 0 ? best[0].score : undefined,
-      explanation: best.length > 0 ? best[0].analisis : "No actionable signals found"
+      score: best[0]?.score,
+      explanation: best[0]?.analisis ?? "No actionable signals found"
     };
+
   } catch (error: any) {
     console.error("❌ Error en evaluarActivos:", error.message);
     return {
@@ -288,3 +298,4 @@ console.log(current.price,"price current");
     };
   }
 }
+
