@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { enviarAlertaInversionTelegram } from "../telegram/api/enviarAlertaInversion.js";
+import { enviarAlertaInversionTelegram } from "../services/telegram/telegram.service.js";
 
 const router = Router();
 
