@@ -36,7 +36,6 @@ import 'dotenv/config'; // Importante para cargar el CRON_SECRET y claves de API
 import jobRoutes from "./src/routes/jobs.routes.js";
 import dbRoutes from "./src/routes/db.routes.js"; // Para símbolos y embeddings
 import marketRoutes from "./src/routes/market.routes.ts"; // Para precios y evaluación manual
-import telegramRoutes from "./src/routes/telegram.routes.js"; // Para alertas por Telegram
 
 const app = express();
 
@@ -61,7 +60,6 @@ app.use(
 app.use("/api/jobs", jobRoutes);     // Ejemplo: POST /api/jobs/run-evaluacion
 app.use("/api/db", dbRoutes);         // Ejemplo: GET /api/db/simbolos
 app.use("/api/market", marketRoutes); // Ejemplo: GET /api/market/precio/AAPL
-app.use("/api/telegram", telegramRoutes); // Ejemplo: POST /api/telegram/alerta-inversion
 
 /* Health Check (Opcional pero recomendado) */
 app.get("/status", (req, res) => {
