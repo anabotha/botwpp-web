@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { enviarAlertaInversionMail } from "../../services/mail/mail.service.js";
 import {storeAlertaInversion} from "../../services/alerts.service.js";
+import { enviarAlertaInversionTelegram } from "../../services/telegram/telegram.service.js";
 // export async function enviarAlertaInversion({
 //   recomendacion,
 //   activo,
@@ -72,21 +73,21 @@ export async function enviarAlertaInversion({
   accion: string;
 }  
 ) {
-// console.log("llega a  alerta inversion")
 
-// console.log("Alerta enviada");
   console.log(recomendacion);
   console.log(tipo_activo);
   console.log(monto_sug);
 
-//   console.log(activo);
-//   console.log(precio);
-//   console.log(detalle);
-//   console.log(mercado);
 
-//  console.log("Enviando alerta inversión:");
 
   await enviarAlertaInversionMail({recomendacion,activo,tipo_activo,precio,monto_sug,detalle,mercado});
+   await enviarAlertaInversionTelegram({
+      recomendacion: recomendacion.toUpperCase(),
+      activo: activo.toUpperCase(),
+      precio,
+      detalle,
+      mercado,
+    });
   //enviar alerta por whatsapp.
   //almacenar alerta en base de datos.
  await storeAlertaInversion({
