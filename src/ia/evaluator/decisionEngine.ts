@@ -24,7 +24,8 @@ interface ExecutionResult {
 
 export async function runDecisionEngine(
   marketSnapshot: any,
-  availableMoney: { ars: number; usd: number }
+  availableMoney: { ars: number; usd: number },
+  recentRecommendations?: any[]
 ) {
   console.log("Running Decision Engine for:", marketSnapshot);
 
@@ -101,7 +102,7 @@ Señales técnicas estándar (EMA, RSI, VWAP, soportes/resistencias, breakouts, 
 
 No infieras información que no esté respaldada por el contexto recibido.
 
-REGLAS CRÍTICAS¿
+REGLAS CRÍTICAS
 
 Salida estricta
 Tu respuesta debe ser EXCLUSIVAMENTE un array de objetos JSON.
@@ -167,7 +168,7 @@ Cada objeto del array debe cumplir exactamente con la siguiente estructura:
 "score": 0.00,
 "price": 0.00,
 "monto_sugerido": 0.00,
-"analisis": "Explicación técnica y/o fundamental breve, concreta y verificable",
+"analisis": "Explicación técnica y/o fundamental breve, concreta y verificable. 1 oracion maximo",
 "mercado": "IOL/NASDAQ/NYSE/TD"
 }
 ]
@@ -189,22 +190,12 @@ Catalizadores cercanos
 Gestión de riesgo implícita
 
 COMPORTAMIENTO COMO CRON
-
 No repitas recomendaciones previas sin cambios relevantes.
-
 Prefiere menos operaciones de mayor calidad.
-
 Si no hay oportunidades claras, devuelve un array vacío ([]).
-
-Si después querés, te lo puedo entregar:
-
-en versión ultra strict para producción,
-
-optimizado para embeddings + Supabase,
-
-separado en BUY-only / SELL-only,
-
-o calibrado solo para mercado argentino.`
+Ultimas reco, no la repitas :${JSON.stringify(recentRecommendations||"")}
+SnapShot de mercado recibido: 
+`
   });
 
   const evaluacion = await evaluarActivos(activesArray);

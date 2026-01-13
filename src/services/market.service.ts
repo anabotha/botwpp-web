@@ -1,4 +1,4 @@
-import { getSimbolosDb, getSimbolosInteresDb } from "./db.service.js";
+import { getSimbolosDb, getSimbolosInteresDb,getRecentRecommendationsDb } from "./db.service.js";
 import { getPriceCommonStock, getPriceEtf } from "./marketData.service.js";
 import { getTotalArs, getTotalUsd } from "./wallet.service.js";
 import { getCedearsTodos, getLetrasTodas } from "./marketIOL.service.js";
@@ -103,16 +103,21 @@ export function sampleRandom<T>(array: T[], n: number): T[] {
           .slice(0, n);
 }
 
+
+
+
 export const ejecutarEvaluacionMercado = async () => {
      // console.log("ejectura evaluaciokn mercado");
      let activos: any[] = await getSimbolosDb() ?? [];
      const simbolosInteres : any[] = await getSimbolosInteresDb() ?? [];
 
+     let recentRecommendations = await getRecentRecommendationsDb(2);
+     
      const esDiaLaboral = () => {
           const day = new Date().getDay();
           return day !== 0 && day !== 6;
      };
-
+     
      if (!esDiaLaboral()) return { message: "Mercado cerrado" };
 
      const [getArs, getUsd] = await Promise.all([getTotalArs(), getTotalUsd()]);
@@ -143,12 +148,12 @@ export const ejecutarEvaluacionMercado = async () => {
      const accionesIOL = [...filtrados, ...randomExtra];
      // const accionesIOL: [] = [];
      // const accionesTD: [] = [];
-
+     
      const marketSnapshot = [...accionesTD, ...accionesIOL];
      if (marketSnapshot.length <2) {
           console.log("No hay datos suficientes para evaluar");
   return [];
      }
      console.log("ms", marketSnapshot); console.log("llego a marketservice")
-     return await runDecisionEngine(marketSnapshot, totalMoney);
+     return await runDecisionEngine(marketSnapshot, totalMoney, recentRecommendations);
 };

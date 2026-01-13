@@ -30,3 +30,16 @@ export const getSimbolosInteresDb = async (): Promise<SimboloInteres[]> => {
   return data ?? [];
 };
 
+export const getRecentRecommendationsDb = async (limit: number ): Promise<any[]> => {
+  const { data, error } = await supabase
+    .from('alerts')
+    .select('*')
+    .order('fecha', { ascending: false })
+    .limit(limit);
+if (error) {
+    console.error('Error al traer ultimas recomendaciones:', error.message);
+    throw error;
+  }
+
+  return data ?? [];
+}
