@@ -219,15 +219,28 @@ export async function evaluarActivos(
 
   try {
     //  Solo lo que no sea HOLD o tenga score >= 0.5
-    const best = activesArray.filter(act => act.action !== "HOLD" && act.score >= 0.5).
+    const best = activesArray.filter(act => act.action !== "HOLD" && act.score >= 0.7).
     sort((a, b) => b.score - a.score).slice(0, 5);
 
+    // Check if it's 9am-12pm GMT-5 and sort BUYs before SELLs
+    const now = new Date();
+    const gmtMinus5 = new Date(now.toLocaleString('en-US', { timeZone: 'America/Argentina/Buenos_Aires' }));
+    const hour = gmtMinus5.getHours();
+    const isMorningTrading = hour >= 9 && hour < 12;
 
-    for (let i = 0; i < best.length; i++) {
-      const current = best[i];
+    const sortedBest = isMorningTrading
+      ? best.sort((a, b) => {
+          if (a.action === "BUY" && b.action !== "BUY") return -1;
+          if (a.action !== "BUY" && b.action === "BUY") return 1;
+          return b.score - a.score;
+        })
+      : best.sort((a, b) => b.score - a.score); 
+      
+      for (let i = 0; i < sortedBest.length; i++) {
+      const current = sortedBest[i];
 
 
-      if (current.score > 0.7) {
+      if (current.score >= 0.7) {
 console.log(current.price,"price current");
         if (current.action === "BUY") {
           // console.log("Explanation generated:", current.analisis, "COMPRA");
