@@ -28,16 +28,16 @@ export async function enviarAlertaInversionTelegram({
     });
 
     // Guardar en base de datos
-    if (guardarEnDB) {
-      await storeAlertaInversion({
-        accion: recomendacion,
-        activo,
-        tipo_activo: activo,
-        mercado: mercado || "No especificado",
-        precio,
-        detalle,
-      });
-    }
+//     if (guardarEnDB) {
+//       await storeAlertaInversion({
+//         accion: recomendacion,
+//         activo,
+//         tipo_activo: activo,
+//         mercado: mercado || "No especificado",
+//         precio,
+//         detalle,
+//       });
+//     }
 
     return {
       success: true,
