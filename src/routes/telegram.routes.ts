@@ -19,12 +19,7 @@ router.post("/alerta-inversion", async (req, res) => {
       });
     }
 
-    if (!["COMPRA", "VENTA"].includes(recomendacion.toUpperCase())) {
-      return res.status(400).json({
-        success: false,
-        error: "Recomendación debe ser COMPRA o VENTA",
-      });
-    }
+
 
     const result = await enviarAlertaInversionTelegram({
       recomendacion: recomendacion.toUpperCase(),
