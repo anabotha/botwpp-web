@@ -315,16 +315,16 @@ export async function filtrarMejoresActivos(
   
   // Detectar error de IA
   if (activesArray?.length === 1 && activesArray[0].action === "error") {
-    await enviarAlertaInversion({
-      recomendacion: "Servicio de IA no disponible temporalmente. Tenga esto en cuenta.",
-      activo: "",
-      tipo_activo: "",
-      precio: "0",
-      monto_sug: "0",
-      detalle: "",
-      mercado: "",
-      accion: ""
-    });
+    // await enviarAlertaInversion({
+    //   recomendacion: "Servicio de IA no disponible temporalmente. Tenga esto en cuenta.",
+    //   activo: "",
+    //   tipo_activo: "",
+    //   precio: "0",
+    //   monto_sug: "0",
+    //   detalle: "",
+    //   mercado: "",
+    //   accion: ""
+    // });
     return [];
   }
     const isMorningTrading = validarHorarioMercado();
