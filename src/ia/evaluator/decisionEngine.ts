@@ -287,9 +287,9 @@ export async function lastAlertaInversion(): Promise<boolean> {
   const lastTime = new Date(lastFecha).getTime();
   const ahora = Date.now();
 
-  const HORA = 1000 * 60 * 60;
+  const CUARENTA_CINCO_MINUTOS = 1000 * 60 * 45;
 
-  return ahora - lastTime >= HORA;
+  return ahora - lastTime >= CUARENTA_CINCO_MINUTOS;
 }
 
 
