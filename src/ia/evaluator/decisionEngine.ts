@@ -31,6 +31,14 @@ Tu tarea es analizar datos de mercado, contexto histórico y noticias financiera
 
 Eres un proceso automático (cron) que se ejecuta periódicamente.
 
+PRINCIPIO CENTRAL DE COMPORTAMIENTO
+
+No operes de forma reactiva ni excesiva.
+El estado por defecto de una posición es HOLD.
+
+NO se debe recomendar SELL de manera reiterada ni innecesaria.
+Las ventas deben responder a objetivos cumplidos o a deterioro claro del escenario.
+
 COMPORTAMIENTO SEGÚN FRANJA HORARIA (INTRADÍA)
 
 FRANJA MATUTINA (hasta las 11:00 del mercado correspondiente):
@@ -51,47 +59,61 @@ Asume horizontes de holding cortos (horas, no días).
 
 El análisis debe justificar explícitamente por qué el activo podría subir durante la jornada actual.
 
-FRANJA POSTERIOR A LAS 11:00 (GESTIÓN Y CONTROL):
+FRANJA POSTERIOR A LAS 11:00 (GESTIÓN, CONTROL Y PACIENCIA):
 
 A partir de las 11:00, reduce significativamente la frecuencia de nuevas recomendaciones.
 
 NO fuerces operaciones.
-NO busques nuevas entradas salvo que exista una oportunidad excepcional.
+NO generes ventas constantes sin motivo objetivo.
+NO busques nuevas entradas salvo oportunidad excepcional.
 
-Prioriza:
-- SELL para toma de ganancias.
-- SELL para reducción de riesgo.
-- HOLD para mantener posiciones bien encaminadas.
+Prioriza el seguimiento y evaluación de posiciones abiertas.
 
-Solo emite una recomendación BUY si:
-- El score es mayor o igual a 0.85.
+Acciones permitidas:
+- HOLD como estado principal.
+- SELL solo bajo condiciones claras (ver sección de gestión de ganancias y riesgo).
+- BUY únicamente si existe una oportunidad extraordinaria.
+
+Si no hay decisiones claras de gestión, devuelve un array vacío ([]).
+
+GESTIÓN DE GANANCIAS INTRADÍA (REGLA CRÍTICA)
+
+El objetivo intradía por trade es +2%.
+
+SOLO recomienda SELL si se cumple al menos una de estas condiciones:
+
+1) TOMA DE GANANCIA:
+- El activo ya alcanzó o superó aproximadamente el 2% de ganancia intradía.
+- El momentum comienza a debilitarse o el riesgo de reversión aumenta.
+- La venta protege una ganancia ya lograda.
+
+2) PROTECCIÓN DE CAPITAL:
+- El análisis actualizado indica alta probabilidad de movimiento adverso.
+- Hay ruptura de soporte relevante, pérdida clara de momentum o catalizador negativo.
+- El riesgo esperado supera razonablemente el beneficio potencial.
+
+NO recomiendes SELL simplemente por variaciones menores o ruido de mercado.
+
+Si el activo aún no alcanzó el objetivo y el setup sigue válido, recomienda HOLD.
+
+REGLAS PARA NUEVAS COMPRAS (BUY) DESPUÉS DE LAS 11:00
+
+Solo emite una recomendación BUY si TODAS se cumplen:
+- Score >= 0.85.
 - Existe un catalizador claro aún vigente.
-- El setup presenta una asimetría riesgo/beneficio excepcional.
+- La relación riesgo/beneficio es excepcional.
+- El movimiento esperado aún no fue capturado por el mercado.
 
-Prefiere recuperar ganancias, proteger capital y consolidar resultados antes que abrir nuevas posiciones.
+Las compras tardías deben ser raras y de alta convicción.
 
-Si no hay acciones necesarias de gestión (SELL / HOLD relevantes), devuelve un array vacío ([]).
+PERFIL Y OBJETIVOS
 
-GESTIÓN DE GANANCIAS INTRADÍA
-
-Las recomendaciones BUY matutinas deben apuntar a capturar movimientos de al menos 2% durante la jornada.
-
-Después de las 11:00, prioriza:
-- Asegurar ganancias ya obtenidas.
-- Evitar reversión de beneficios.
-- Reducir exposición si el momentum se debilita.
-
-Evita sobreasignar capital a una sola operación intradía salvo convicción excepcional (score ≥ 0.90).
-
-Prefiere menos operaciones de mayor calidad.
-
-Perfil de riesgo: Moderado
+Perfil de riesgo: Moderado.
 
 Objetivo de performance:
 - 12% semanal en ideas agregadas.
 - 2% diario como objetivo mínimo por trade.
 
-Restricción operativa:
 No es obligatorio invertir todo el capital en cada ejecución.
 
 FUENTES Y CONTEXTO PERMITIDO
@@ -99,55 +121,41 @@ FUENTES Y CONTEXTO PERMITIDO
 Puedes basar tus decisiones únicamente en:
 - Datos de mercado actuales o recientes (precio, tendencia, volumen, momentum).
 - Contexto histórico provisto explícitamente (series, indicadores, embeddings).
-- Noticias financieras relevantes (por ejemplo Wall Street Journal u otros medios financieros confiables), solo si están alineadas con el activo y el timing.
-- Señales técnicas estándar (EMA, RSI, VWAP, soportes/resistencias, breakouts, etc.).
+- Noticias financieras relevantes y actuales, alineadas con el activo y el timing.
+- Señales técnicas estándar (EMA, RSI, VWAP, soportes/resistencias, breakouts).
 
-No infieras información que no esté respaldada por el contexto recibido.
+No infieras información no respaldada por el contexto recibido.
 
-REGLAS CRÍTICAS
+REGLAS CRÍTICAS DE SALIDA
 
-Salida estricta:
 Tu respuesta debe ser EXCLUSIVAMENTE un array de objetos JSON.
 No incluyas texto explicativo, encabezados, markdown ni bloques de código.
 
-Datos insuficientes:
-Si no hay datos suficientes para justificar una decisión sobre un activo, omítelo.
+Si no hay decisiones claras de BUY, SELL o HOLD relevantes, devuelve [].
 
-Activos fuera del listado:
-Solo puedes recomendar activos no listados si:
-- La confianza es mayor o igual a 0.90.
-- Existe justificación técnica y/o fundamental clara y actual.
+Solo considera recomendaciones con score >= 0.7.
 
 Control de capital:
-La suma de todos los "monto_sugerido" de acciones BUY no debe exceder el dinero disponible.
-Nunca sugieras un monto superior al capital disponible.
+- La suma de los montos sugeridos en BUY no debe exceder el capital disponible.
+- Nunca sugieras un monto superior al capital disponible.
 
-Lógica por tipo de acción:
+LÓGICA POR TIPO DE ACCIÓN
 
 BUY:
-"monto_sugerido" representa el capital a asignar (número positivo).
+"monto_sugerido" = capital a asignar (positivo).
 
 SELL:
-"monto_sugerido" representa el monto estimado a liquidar de la posición actual (número positivo).
+"monto_sugerido" = monto estimado a liquidar (positivo).
 
 HOLD:
-"monto_sugerido" debe ser 0.
-Solo puede aplicarse a activos que ya se poseen.
-
-Score de convicción:
-Rango válido: 0.00 a 1.00.
-Solo se consideran recomendaciones con score >= 0.7.
-
-Debe reflejar coherencia entre señales técnicas, contexto y riesgo.
-Scores altos sin fundamentos claros no están permitidos.
+"monto_sugerido" = 0.
+Solo aplicable a activos ya poseídos.
 
 LÓGICA DE MERCADO
 
-Indica correctamente el mercado donde se opera el activo:
+Indica correctamente el mercado:
 - IOL para mercado argentino y CEDEARs.
 - NASDAQ, NYSE, TD u otro para mercado estadounidense.
-
-El mercado debe ser coherente con el activo recomendado.
 
 ESTRUCTURA OBLIGATORIA DEL JSON
 
@@ -159,33 +167,23 @@ ESTRUCTURA OBLIGATORIA DEL JSON
     "score": 0.00,
     "price": 0.00,
     "monto_sugerido": 0.00,
-    "analisis": "Explicación técnica y/o fundamental breve, concreta y verificable. 1 oración máximo",
+    "analisis": "Justificación técnica breve, concreta y verificable. 1 oración máximo",
     "mercado": "IOL/NASDAQ/NYSE/TD"
   }
 ]
 
-CRITERIOS DE CALIDAD DE ANÁLISIS
-
-El análisis debe ser breve, técnico y accionable.
-Evita frases vagas como “buen potencial” o “parece alcista”.
-
-Prioriza:
-- Momentum confirmado.
-- Tendencias claras.
-- Catalizadores cercanos.
-- Gestión de riesgo implícita.
-
 COMPORTAMIENTO COMO CRON
 
 No repitas recomendaciones previas sin cambios relevantes.
-Prefiere menos operaciones de mayor calidad.
-Si no hay oportunidades claras o acciones de gestión necesarias, devuelve un array vacío ([]).
+Evalúa progresivamente.
+Prefiere paciencia y calidad sobre cantidad de señales.
 
 Últimas recomendaciones (no repetir): ${JSON.stringify(recentRecommendations || "")}
 
 Snapshot de mercado recibido:
 `;
 };
+
 
 const PROMPT_11_BUY_BLOCK= `CONTEXTO HORARIO:
 Son las 10:00–11:00 de Argentina.
@@ -249,7 +247,7 @@ export async function runDecisionEngine(
   recentRecommendations?: any[]
 ) {
   console.log("Running Decision Engine for:", marketSnapshot);
-  const prompt = await buildSystemPrompt(new Date().getHours());
+  const prompt = await buildSystemPrompt();
   const activesArray: ActiveSignal[] = await scoreMarketSignal({
     availableMoney: { ars: availableMoney.ars, usd: availableMoney.usd },
     marketSnapshot,
@@ -262,17 +260,17 @@ export async function runDecisionEngine(
 }
 
 
-async function buildSystemPrompt(hour: number) {
-  let prompt :string = basePrompt(await getRecentRecommendationsDb(2));
+async function buildSystemPrompt() {
+  const now = new Date();
+  const utcHour = now.getUTCHours();
+  const m = now.getUTCMinutes();
+  let prompt :string = basePrompt(await getRecentRecommendationsDb(4));
 
-  if (hour >= 10 && hour < 11) {
+  // 14:00-14:59 UTC = 11:00-11:59 Argentina
+  // Solo agregar PROMPT_11_BUY_BLOCK si estamos en esa ventana
+  if (utcHour === 14 && m >=40 && m < 59) {
     prompt += PROMPT_11_BUY_BLOCK;
   }
-  //  else if (hour < 10.5) {
-  //   prompt += PROMPT_PREMARKET;
-  // } else if (hour >= 15.5) {
-  //   prompt += PROMPT_CIERRE;
-  // }
 
   return prompt;
 }
@@ -284,7 +282,11 @@ export async function lastAlertaInversion(): Promise<boolean> {
   // Si nunca hubo alertas, permitir envío
   if (!lastFecha) return true;
 
-  const lastTime = new Date(lastFecha).getTime();
+  const lastDate = new Date(lastFecha);
+  // Validar que la fecha sea válida
+  if (isNaN(lastDate.getTime())) return true;
+
+  const lastTime = lastDate.getTime();
   const ahora = Date.now();
 
   const CUARENTA_CINCO_MINUTOS = 1000 * 60 * 45;
@@ -292,17 +294,26 @@ export async function lastAlertaInversion(): Promise<boolean> {
   return ahora - lastTime >= CUARENTA_CINCO_MINUTOS;
 }
 
+export const validarHorarioMercado = (): boolean => {
+  const now = new Date();
+  const h = now.getUTCHours();
+  const m = now.getUTCMinutes();
+  console.log(`Hora UTC actual: ${h}:${m}`);
+  
+  // 13:40 - 14:00 UTC (10:40 - 11:00 Argentina) - Horario de mañana
+  const esMañana =
+    (h === 13 && m >= 40) ||
+    h === 14;
+
+  return esMañana;
+}
 
 export async function filtrarMejoresActivos(
   activesArray: ActiveSignal[]
 ): Promise<ActiveSignal[]> {
   // Filtrar señales con score >= 0.7
-const now = new Date();
-    const gmtMinus5 = new Date(
-      now.toLocaleString("en-US", { timeZone: "America/New_York" }) // GMT-5 / NYSE
-    );
-    const hour = gmtMinus5.getHours();
-    const isMorningTrading = hour >= 9 && hour < 12;
+
+    const isMorningTrading = validarHorarioMercado();
 
     let buys: ActiveSignal[] = [];
     let sells: ActiveSignal[] = [];
@@ -318,7 +329,7 @@ const now = new Date();
       sells = activesArray
         .filter(a => a.action === "SELL" && a.score >= 0.7)
         .sort((a, b) => b.score - a.score)
-        .slice(0, 3);
+        .slice(0, 2);
 
     } 
     else {
