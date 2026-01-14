@@ -186,7 +186,7 @@ Snapshot de mercado recibido:
 
 
 const PROMPT_11_BUY_BLOCK= `CONTEXTO HORARIO:
-Son las 10:00–11:00 de Argentina.
+Son las 10:00–11:59 de Argentina.
 
 ESTRATEGIA OBLIGATORIA:
 - Prioriza recomendaciones de COMPRA (BUY).
@@ -240,7 +240,7 @@ Cada objeto del array debe cumplir exactamente con la siguiente estructura:
 "analisis": "Explicación técnica y/o fundamental breve, concreta y verificable. 1 oracion maximo",
 "mercado": "IOL/NASDAQ/NYSE/TD"
 }
-]`
+] SNAPSHOT DE MERCADO RECIBIDO:`
 export async function runDecisionEngine(
   marketSnapshot: any,
   availableMoney: { ars: number; usd: number },
@@ -262,18 +262,25 @@ export async function runDecisionEngine(
 
 async function buildSystemPrompt() {
   const now = new Date();
-  const utcHour = now.getUTCHours();
+  const h = now.getUTCHours();
   const m = now.getUTCMinutes();
-  let prompt :string = basePrompt(await getRecentRecommendationsDb(4));
 
-  // 14:00-14:59 UTC = 11:00-11:59 Argentina
-  // Solo agregar PROMPT_11_BUY_BLOCK si estamos en esa ventana
-  if (utcHour === 14 && m >=40 && m < 59) {
+  let prompt: string = basePrompt(
+    await getRecentRecommendationsDb(4)
+  );
+
+  // 13:40 – 14:30 UTC → Apertura
+  const esApertura =
+    (h === 13 && m >= 40) ||
+    (h === 14 && m < 30);
+
+  if (esApertura) {
     prompt += PROMPT_11_BUY_BLOCK;
   }
 
   return prompt;
 }
+
 
 export async function lastAlertaInversion(): Promise<boolean> {
   const rows = await getRecentRecommendationsDb(1);
@@ -378,7 +385,7 @@ export async function evaluarActivos(
   try {
     // Filtrar señales con score >= 0.7
     let last=await lastAlertaInversion();
-    if (last) {
+    if (last || (activesArray.some(a=>a.score>=0.89) && activesArray.some(a=>a.action==="BUY" ))) {
       const best =  await filtrarMejoresActivos(activesArray);
       console.log("Mejores activos filtrados:", best);
     

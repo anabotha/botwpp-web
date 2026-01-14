@@ -3,7 +3,7 @@ import { getPriceCommonStock, getPriceEtf } from "./marketData.service.js";
 import { getTotalArs, getTotalUsd } from "./wallet.service.js";
 import { getCedearsTodos, getLetrasTodas } from "./marketIOL.service.js";
 import { runDecisionEngine } from "../ia/evaluator/decisionEngine.js";
-
+import { filtrarActivosApertura,filtrarActivosMediodia } from "./filtrar.service.js";
 export interface simbolosActivos{
      activo: string;
      exchange: string;
@@ -152,13 +152,36 @@ export const ejecutarEvaluacionMercado = async () => {
           simbolosSet.has(String(item.simbolo).trim().toUpperCase())
      );
 
-     const candidatasRandom = accionesIOLTodas.filter(item =>
+     // Filtrar solo candidatas nuevas (que no están en cartera)
+     const candidatasNuevas = accionesIOLTodas.filter(item =>
           !simbolosSet.has(String(item.simbolo).trim().toUpperCase())
      );
 
-     const randomExtra = sampleRandom(candidatasRandom, 15);
+     // Filtrar candidatas según la hora - aplicar criterios de mercado
+     const now = new Date();
+     const h = now.getUTCHours();
+     const m = now.getUTCMinutes();
+const esApertura =
+  (h === 13 && m >= 40) ||
+  (h === 14 && m < 30);
 
-     const accionesIOL = [...filtrados, ...randomExtra];
+// 14:30 – 18:00 UTC → Mediodía
+const esMediodia =
+  (h === 14 && m >= 30) ||
+  (h >= 15 && h < 18);
+
+// 18:00 en adelante → Cierre / no operar
+const esCierre = h >= 18;
+     let filtrosCriterio: any[] = [];
+     if (esApertura) {
+          filtrosCriterio =  filtrarActivosApertura(candidatasNuevas);
+     } else if(esMediodia) {
+          filtrosCriterio =  filtrarActivosMediodia(candidatasNuevas);
+     }else{
+          filtrosCriterio = [];
+     }
+
+     const accionesIOL = [...filtrados, ...filtrosCriterio];
      // const accionesIOL: [] = [];
      // const accionesTD: [] = [];
      
