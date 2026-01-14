@@ -49,7 +49,7 @@ export const getAccionesTD = async (activos: simbolosActivos[],simbolosInteres: 
                mapaActivos.set(s.activo, {
                     ticker: s.activo,
                     exchange: s.exchange || "NASDAQ",
-                    tipo: s.tipo_activo || "common_stock",
+                    tipo: s.tipo_activo || "ETF",
                     poseido: false,
                     cantidad: 0,
                     costoPromedio: 0
@@ -63,7 +63,7 @@ export const getAccionesTD = async (activos: simbolosActivos[],simbolosInteres: 
      // 3. Bucle de consulta con Delay para Plan Free
      for (const item of listaFinal) {
           try {
-               // console.log(`Evaluando ${item.ticker} (${item.poseido ? 'En Portafolio' : 'Interés'})...`);
+               console.log(`Evaluando ${item.ticker} (${item.poseido ? 'En Portafolio' : 'Interés'})...`);
 
                let data;
                if (item.tipo === 'ETF') {
