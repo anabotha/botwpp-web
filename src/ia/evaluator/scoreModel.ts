@@ -5,7 +5,7 @@ import { getContextEmbeddings } from "../../services/embeddings.service.js"; // 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export interface SignalInterface {
-  type: "buy" | "sell" | "hold";
+  type: "buy" | "sell" | "hold" | "error";
   value: number;
 }
 
@@ -54,7 +54,12 @@ async function calculateScore({ market, context, systemPrompt, availableMoney }:
       console.warn("⚠️ Error 429 - Quota excedida en Gemini API. Retornando array vacío.");
       return []; // Devolver array vacío para que el proceso continúe
     }
-    
+    if (error?.status===503 || error?.message?.includes('503')) {
+      return [{
+        action: "error" as any,
+        score: 0,
+      }];
+    }
     console.error("Error detallado de la IA:", error);
   }
 
