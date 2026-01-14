@@ -105,7 +105,17 @@ export function sampleRandom<T>(array: T[], n: number): T[] {
 
 
 
+export const validarHorarioMercado = (): boolean => {
+const now = new Date();
+const h = now.getUTCHours();
+const m = now.getUTCMinutes();
 
+const dentroVentana =
+  (h > 13 || (h === 13 && m >= 40)) &&
+  (h < 19 || (h === 19 && m <= 30));
+
+return dentroVentana;
+}
 export const ejecutarEvaluacionMercado = async () => {
      // console.log("ejectura evaluaciokn mercado");
      let activos: any[] = await getSimbolosDb() ?? [];
@@ -118,7 +128,8 @@ export const ejecutarEvaluacionMercado = async () => {
           return day !== 0 && day !== 6;
      };
      
-     if (!esDiaLaboral()) return { message: "Mercado cerrado" };
+     if (!esDiaLaboral()) return { message: "Mercado cerrado (fin de semana)" };
+     if (!validarHorarioMercado()) return { message: "Mercado cerrado (fuera de horario 9:30-16:00 EST)" };
 
      const [getArs, getUsd] = await Promise.all([getTotalArs(), getTotalUsd()]);
      const totalMoney = {
