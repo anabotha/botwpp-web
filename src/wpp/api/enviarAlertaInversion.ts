@@ -80,7 +80,7 @@ export async function enviarAlertaInversion({
 
 
 
-  await enviarAlertaInversionMail({recomendacion,activo,tipo_activo,precio,monto_sug,detalle,mercado});
+  // await enviarAlertaInversionMail({recomendacion,activo,tipo_activo,precio,monto_sug,detalle,mercado});
    await enviarAlertaInversionTelegram({
       recomendacion: recomendacion.toUpperCase(),
       activo: activo.toUpperCase(),

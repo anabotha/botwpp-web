@@ -1,6 +1,7 @@
 
 import { scoreMarketSignal } from "./scoreModel.js";
 import { enviarAlertaInversion } from "../../wpp/api/enviarAlertaInversion.js";
+import { getRecentRecommendationsDb } from "../../services/db.service.js";
 
 type ActionType = "BUY" | "SELL" | "HOLD";
 
@@ -22,18 +23,10 @@ interface ExecutionResult {
   explanation?: string;
 }
 
-export async function runDecisionEngine(
-  marketSnapshot: any,
-  availableMoney: { ars: number; usd: number },
-  recentRecommendations?: any[]
-) {
-  console.log("Running Decision Engine for:", marketSnapshot);
 
-  const activesArray: ActiveSignal[] = await scoreMarketSignal({
-    availableMoney: { ars: availableMoney.ars, usd: availableMoney.usd },
-    marketSnapshot,
-    signalText: `market snapshot`,
-    systemPrompt: `Actúa como un Analista de Inversiones Cuantitativo profesional, especializado en gestión de cartera de corto plazo (swing / intraday).
+/////VARIABLES DE PROMPTS/////
+const basePrompt=(recentRecommendations?:any[])=>{
+  return `Actúa como un Analista de Inversiones Cuantitativo profesional, especializado en gestión de cartera de corto plazo (swing / intraday).
 Tu tarea es analizar datos de mercado, contexto histórico y noticias financieras relevantes para generar recomendaciones accionables, priorizando control de riesgo, consistencia y uso eficiente del capital.
 
 Eres un proceso automático (cron) que se ejecuta periódicamente.
@@ -74,9 +67,7 @@ Las recomendaciones BUY matutinas deben apuntar a capturar movimientos de al men
 Evita sobreasignar capital a una sola operación intradía salvo convicción excepcional (score ≥ 0.90).
 
 Prefiere múltiples posiciones pequeñas y líquidas antes que una sola concentración.
-CONTEXTO DE CAPITAL
 
-Capital total disponible hoy: ${availableMoney}
 Perfil de riesgo: Moderado
 
 Objetivo de performance:
@@ -120,7 +111,7 @@ Existe justificación técnica y/o fundamental clara y actual
 
 Control de capital
 
-La suma de todos los "monto_sugerido" de acciones BUY no debe exceder ${availableMoney}.
+La suma de todos los "monto_sugerido" de acciones BUY no debe exceder el dinero disponible.
 
 Nunca sugieras un monto superior al capital disponible.
 
@@ -195,28 +186,117 @@ Prefiere menos operaciones de mayor calidad.
 Si no hay oportunidades claras, devuelve un array vacío ([]).
 Ultimas reco, no la repitas :${JSON.stringify(recentRecommendations||"")}
 SnapShot de mercado recibido: 
-`
+`}
+const PROMPT_11_BUY_BLOCK= `CONTEXTO HORARIO:
+Son las 10:00–11:00 de Argentina.
+
+ESTRATEGIA OBLIGATORIA:
+- Prioriza recomendaciones de COMPRA (BUY).
+- Identifica entre 3 y 4 activos con mayor probabilidad de alcanzar MINIMO 2% intradía.
+- Divide el capital disponible en partes similares entre los activos recomendados.
+- Justifica la entrada en:
+  - Tendencia intradía
+  - Continuación de movimiento post-apertura
+  - Confirmación de volumen
+  - Noticias positivas o catalizadores recientes (WSJ, earnings, sector momentum)
+
+  REGLAS CRÍTICAS
+
+Salida estricta
+Tu respuesta debe ser EXCLUSIVAMENTE un array de objetos JSON.
+No incluyas texto explicativo, encabezados, markdown ni bloques de código.
+
+Datos insuficientes
+Si no hay datos suficientes para justificar una decisión sobre un activo, omítelo.
+
+
+RESTRICCIONES:
+- No recomiendes SELL salvo riesgo extremo.
+- No incluyas activos laterales o sin momentum claro.
+- Si no hay oportunidades claras, devuelve un array vacío.
+
+
+LÓGICA DE MERCADO
+
+Indica correctamente el mercado donde se opera el activo:
+
+IOL para mercado argentino y CEDEARs
+
+NASDAQ, NYSE, TD u otro para mercado estadounidense
+
+El mercado debe ser coherente con el activo recomendado.
+
+ESTRUCTURA OBLIGATORIA DEL JSON
+
+Cada objeto del array debe cumplir exactamente con la siguiente estructura:
+
+[
+{
+"activo": "TICKER",
+"tipo_activo": "CEDEAR/STOCK/ETF/LETRA/BONO",
+"action": "BUY/SELL/HOLD",
+"score": 0.00,
+"price": 0.00,
+"monto_sugerido": 0.00,
+"analisis": "Explicación técnica y/o fundamental breve, concreta y verificable. 1 oracion maximo",
+"mercado": "IOL/NASDAQ/NYSE/TD"
+}
+]`
+export async function runDecisionEngine(
+  marketSnapshot: any,
+  availableMoney: { ars: number; usd: number },
+  recentRecommendations?: any[]
+) {
+  console.log("Running Decision Engine for:", marketSnapshot);
+  const prompt = await buildSystemPrompt(new Date().getHours());
+  const activesArray: ActiveSignal[] = await scoreMarketSignal({
+    availableMoney: { ars: availableMoney.ars, usd: availableMoney.usd },
+    marketSnapshot,
+    signalText: `market snapshot`,
+    systemPrompt:prompt
   });
 
   const evaluacion = await evaluarActivos(activesArray);
   return evaluacion;
 }
 
-export async function evaluarActivos(
-  activesArray: ActiveSignal[]
-): Promise<ExecutionResult> {
 
-  console.log("evaluaractivos");
+async function buildSystemPrompt(hour: number) {
+  let prompt :string = basePrompt(await getRecentRecommendationsDb(2));
 
-  if (!activesArray?.length) {
-    return {
-      executed: false,
-      explanation: "No hay datos para generar recomendaciones (quota excedida o sin datos)"
-    };
+  if (hour >= 10 && hour < 11) {
+    prompt += PROMPT_11_BUY_BLOCK;
   }
+  //  else if (hour < 10.5) {
+  //   prompt += PROMPT_PREMARKET;
+  // } else if (hour >= 15.5) {
+  //   prompt += PROMPT_CIERRE;
+  // }
 
-  try {
-    const now = new Date();
+  return prompt;
+}
+
+export async function lastAlertaInversion(): Promise<boolean> {
+  const rows = await getRecentRecommendationsDb(1);
+  const lastFecha = rows?.[0]?.fecha;
+
+  // Si nunca hubo alertas, permitir envío
+  if (!lastFecha) return true;
+
+  const lastTime = new Date(lastFecha).getTime();
+  const ahora = Date.now();
+
+  const HORA = 1000 * 60 * 60;
+
+  return ahora - lastTime >= HORA;
+}
+
+
+export async function filtrarMejoresActivos(
+  activesArray: ActiveSignal[]
+): Promise<ActiveSignal[]> {
+  // Filtrar señales con score >= 0.7
+const now = new Date();
     const gmtMinus5 = new Date(
       now.toLocaleString("en-US", { timeZone: "America/New_York" }) // GMT-5 / NYSE
     );
@@ -239,12 +319,13 @@ export async function evaluarActivos(
         .sort((a, b) => b.score - a.score)
         .slice(0, 3);
 
-    } else {
+    } 
+    else {
       // 🔹 Lógica normal: ordenar por score
       buys = activesArray
         .filter(a => a.action === "BUY" && a.score >= 0.7)
         .sort((a, b) => b.score - a.score)
-        .slice(0, 4);
+        .slice(0, 2);
 
       sells = activesArray
         .filter(a => a.action === "SELL" && a.score >= 0.7)
@@ -253,42 +334,71 @@ export async function evaluarActivos(
     }
 
     const best = [...buys, ...sells];
+    return best;
+}
 
-    for (const current of best) {
-      console.log(current.price, "price current");
+export async function evaluarActivos(
+  activesArray: ActiveSignal[]
+): Promise<ExecutionResult> {
 
-      if (current.action === "BUY") {
-        await enviarAlertaInversion({
-          recomendacion: "OPORTUNIDAD DETECTADA COMPRA",
-          activo: current.activo ?? "?",
-          tipo_activo: current.tipo_activo,
-          precio: String(current.price ?? 0),
-          monto_sug: String(current.monto_sugerido ?? 0),
-          detalle: current.analisis,
-          mercado: current.mercado,
-          accion: current.action
-        });
-      }
 
-      if (current.action === "SELL") {
-        await enviarAlertaInversion({
-          recomendacion: "OPORTUNIDAD DETECTADA VENTA",
-          activo: current.activo ?? "?",
-          tipo_activo: current.tipo_activo,
-          precio: String(current.price ?? 0),
-          monto_sug: String(current.monto_sugerido ?? 0),
-          detalle: current.analisis,
-          mercado: current.mercado,
-          accion: current.action
-        });
-      }
-    }
-
+  if (!activesArray?.length) {
     return {
+      executed: false,
+      explanation: "No hay datos para generar recomendaciones (quota excedida o sin datos)"
+    };
+  }
+
+  try {
+    // Filtrar señales con score >= 0.7
+    let last=await lastAlertaInversion();
+    if (last) {
+      const best =  await filtrarMejoresActivos(activesArray);
+      console.log("Mejores activos filtrados:", best);
+    
+      for (const current of best) {
+        console.log(current.price, "price current");
+
+        if (current.action === "BUY") {
+          await enviarAlertaInversion({
+            recomendacion: "OPORTUNIDAD DETECTADA COMPRA",
+            activo: current.activo ?? "?",
+            tipo_activo: current.tipo_activo,
+            precio: String(current.price ?? 0),
+            monto_sug: String(current.monto_sugerido ?? 0),
+            detalle: current.analisis,
+            mercado: current.mercado,
+            accion: current.action
+          });
+        }
+
+        if (current.action === "SELL") {
+          await enviarAlertaInversion({
+            recomendacion: "OPORTUNIDAD DETECTADA VENTA",
+            activo: current.activo ?? "?",
+            tipo_activo: current.tipo_activo,
+            precio: String(current.price ?? 0),
+            monto_sug: String(current.monto_sugerido ?? 0),
+            detalle: current.analisis,
+            mercado: current.mercado,
+            accion: current.action
+          });
+        }
+      }
+       return {
       executed: best.length > 0,
       score: best[0]?.score,
       explanation: best[0]?.analisis ?? "No actionable signals found"
     };
+    }else{
+      console.log("No se envía alerta: ya se envió una en la última hora.");
+      return {
+        executed: false,
+        explanation: "No se envió alerta: ya se envió una en la última hora."
+      };
+    }
+
+   
 
   } catch (error: any) {
     console.error("❌ Error en evaluarActivos:", error.message);
