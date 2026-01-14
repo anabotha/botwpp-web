@@ -109,13 +109,15 @@ export const validarHorarioMercado = (): boolean => {
 const now = new Date();
 const h = now.getUTCHours();
 const m = now.getUTCMinutes();
-
+console.log(`Hora UTC actual: ${h}:${m}`);
 const dentroVentana =
   (h > 13 || (h === 13 && m >= 40)) &&
   (h < 19 || (h === 19 && m <= 30));
 
 return dentroVentana;
 }
+
+
 export const ejecutarEvaluacionMercado = async () => {
      // console.log("ejectura evaluaciokn mercado");
      let activos: any[] = await getSimbolosDb() ?? [];
