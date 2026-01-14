@@ -187,7 +187,7 @@ Snapshot de mercado recibido:
 
 const PROMPT_11_BUY_BLOCK= `CONTEXTO HORARIO:
 Son las 10:00–11:59 de Argentina.
-
+La meta es un 2% de ganancia intradia.
 ESTRATEGIA OBLIGATORIA:
 - Prioriza recomendaciones de COMPRA (BUY).
 - Identifica entre 3 y 4 activos con mayor probabilidad de alcanzar MINIMO 2% intradía.
